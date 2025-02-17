@@ -3,7 +3,7 @@ package com.fy.baselibrary.retrofit.load
 import android.util.ArrayMap
 import com.fy.baselibrary.retrofit.load.down.DownLoadFileType
 import com.fy.baselibrary.retrofit.load.up.UpLoadFileType
-import com.fy.baselibrary.retrofit.test.BeanModule
+import com.fy.baselibrary.retrofit.request.BeanModule
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
@@ -21,6 +21,7 @@ import retrofit2.http.Url
 
 interface ApiService {
 
+//    应用层 新建 一个 xxService 接口，复制下面 三个接口方法，beanModle 修改成 自己的
     //普通get 请求
     @GET
     suspend fun getCompose(@Url apiUrl: String, @QueryMap params: ArrayMap<String, Any>): BeanModule<Any>

@@ -86,14 +86,6 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
-    //编译时有效 不参与打包
-    compileOnly 'org.jsoup:jsoup:1.10.3'
-    compileOnly('com.squareup.retrofit2:converter-simplexml:2.1.0'){
-        exclude group:'xpp3',module:'xpp3'
-        exclude group:'stax',module:'stax-api'
-        exclude group:'stax',module:'stax'
-    }
-
     //    glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'com.github.bumptech.glide:annotations:4.11.0'

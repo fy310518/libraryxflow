@@ -4,9 +4,9 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.retrofit.converter.file.FileConverterFactory;
 import com.fy.baselibrary.retrofit.interceptor.FileDownInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.RequestHeaderInterceptor;
+import com.fy.baselibrary.retrofit.interceptor.TimeoutInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cache.CacheNetworkInterceptor;
 import com.fy.baselibrary.retrofit.interceptor.cache.IsUseCacheInterceptor;
-import com.fy.baselibrary.retrofit.load.TimeoutInterceptor;
 import com.fy.baselibrary.utils.FileUtils;
 import com.fy.baselibrary.utils.notify.L;
 import com.fy.baselibrary.utils.security.SSLUtil;
@@ -36,8 +36,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 //@Module
 public final class RequestModule {
 
-//    @Singleton
-//    @Provides
     protected static Retrofit getService(OkHttpClient.Builder okBuilder) {
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(FileConverterFactory.create())
@@ -53,8 +51,6 @@ public final class RequestModule {
         return retrofitBuilder.build();
     }
 
-//    @Singleton
-//    @Provides
     protected static GsonConverterFactory getGsonConvertFactory() {
         return GsonConverterFactory.create(new GsonBuilder()
                 .setLenient()// json宽松
@@ -66,8 +62,6 @@ public final class RequestModule {
 //        return DES3GsonConverterFactory.create();//使用 自定义 GsonConverter
     }
 
-//    @Singleton
-//    @Provides
     protected static OkHttpClient.Builder getClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(ConfigUtils.getTimeout(), TimeUnit.MILLISECONDS)
@@ -118,8 +112,6 @@ public final class RequestModule {
         return builder;
     }
 
-//    @Singleton
-//    @Provides
     public static HttpLoggingInterceptor getResponseIntercept() {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
