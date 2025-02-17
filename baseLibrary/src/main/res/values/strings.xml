@@ -1,0 +1,108 @@
+<resources>
+    <string name="easyPullAnimatorTop">com.fy.baselibrary.widget.refresh.EasyTopRefreshView</string>
+    <string name="easyPullAnimatorBottom">com.fy.baselibrary.widget.refresh.EasyBottomLoadMoreView</string>
+    <string name="idle">下拉有惊喜!!!</string>
+    <string name="ready">松开刷新!!!</string>
+
+    <string name="data_loading">正在加载&#8230;</string>
+
+<!--    <string name="photograph">拍照</string>-->
+<!--    <string name="album_selection">相册选择</string>-->
+
+<!--    <string name="save">保存</string>-->
+<!--    <string name="delete">删除</string>-->
+
+<!--    <string name="man">男</string>-->
+<!--    <string name="woman">女</string>-->
+
+<!--    <string name="success">成功</string>-->
+<!--    <string name="error">错误</string>-->
+
+    <string name="back">返回</string>
+    <string name="complete">完成</string>
+
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+
+    <string name="set">设置</string>
+    <string name="search">搜索</string>
+
+    <string name="deauthorization">去授权</string>
+    <string name="permission">权限管理</string>
+    <string name="default_always_message">使用该功能%1$s需要以下权限</string>
+    <!--  允许 "APP" 启用 通讯录 权限吗？  -->
+    <string name="default_special_permission">允许 "%1$s" 启用 %2$s 权限吗？</string>
+    <!--  开启通讯录权限，使app 访问通讯录，从而更好为您服务  -->
+    <string name="default_special_permission_content">开启%1$s权限，让%2$s%3$s，从而更好为您服务</string>
+    <string name="permissionFail">权限请求失败</string>
+    <string name="permissionSuccess">权限请求成功</string>
+    <string name="permissionAllSuccess">权限没有全部授予</string>
+
+    <string name="fyFloatDialog">悬浮窗</string>
+    <string name="fySysSet">系统设置</string>
+    <string name="fyNotify">通知</string>
+    <string name="installApp">安装应用</string>
+    <string name="fySdCard">外部存储</string>
+    <string name="fyVPNConn">VPN 连接</string>
+
+
+    <string name="dataNull">没有数据</string>
+    <string name="accessError">访问出错</string>
+    <string name="clickRetry">点击空白区域重试</string>
+    <string name="internetError">网络错误</string>
+    <string name="confirmInternetRetry">请确认网络连接后点击空白区域重试</string>
+
+    <string name="networkUnavailable">网络不可用，请检查您的网络状态</string>
+    <string name="netConnTimeout">网络连接超时</string>
+    <string name="responseTimeout">服务器响应超时</string>
+    <string name="connectionException">服务器连接异常</string>
+    <string name="DomainError">域名解析错误</string>
+    <string name="certificateValidationFailed">证书验证失败</string>
+    <string name="sslAuthenticationFail">SSL认证失败. 是否继续访问？</string>
+    <string name="typeConversionError">类型转换错误</string>
+    <string name="dataParsingError">数据解析错误</string>
+    <string name="requestFail">请求失败，请稍后再试...</string>
+
+
+    <string name="appNoInstall">应用未安装</string>
+    <string name="pleaseUseCorrectNumber">请使用正确的号码！</string>
+    <string name="systemNoTorch">系统不支持电筒</string>
+
+    <string name="systemNoNfc">设备不支持NFC功能!</string>
+    <string name="nfcTurnedOn">NFC功能已打开!</string>
+
+    <string name="openNotificationPermission">请手动打开通知权限</string>
+
+
+
+    <string-array name="languageList">
+        <item>跟随系统</item>
+        <item>英语</item>
+        <item>日语</item>
+        <item>韩语</item>
+        <item>简体中文</item>
+        <item>繁体中文</item>
+    </string-array>
+
+    <!--  生成头像的 背景色数组  -->
+    <string-array name="imgHeadBgColor">
+        <item>#3A91F3</item>
+        <item>#F14E7D</item>
+        <item>#5585A5</item>
+        <item>#F9CB4F</item>
+        <item>#F56B2F</item>
+    </string-array>
+
+</resources>
+<!--    &#32; == 普通的英文半角空格-->
+<!--    &#160; == &nbsp; == &#xA0; == no-break space （普通的英文半角空格但不换行）-->
+<!--    &#12288; == 中文全角空格 （一个中文宽度）-->
+<!--    &#8194; == &ensp; == en空格 （半个中文宽度）-->
+<!--    &#8195; == &emsp; == em空格 （一个中文宽度）-->
+<!--    &#8197; == 四分之一em空格 （四分之一中文宽度）-->
+
+<!--    \u0020 == 半角空格(英文符号),代码中常用的;-->
+<!--    \u3000 == 全角空格(中文符号),中文文章中使用;-->
+
+<!--    如果是继承基类而来的泛型，就用 getGenericSuperclass() , 转型为 ParameterizedType 来获得实际类型-->
+<!--    如果是实现接口而来的泛型，就用 getGenericInterfaces() , 针对其中的元素转型为 ParameterizedType 来获得实际类型-->

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.fy.baselibrary">
+
+    <application
+        android:allowBackup="true"
+        android:supportsRtl="true">
+
+        <!-- Android 7.0 在应用间共享文件 -->
+        <provider
+            android:name=".base.BaseFileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+    </application>
+
+    <!-- 往SDCard写入数据权限 -->
+<!--    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />-->
+<!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />-->
+    <!-- android R 所有文件访问权限 -->
+<!--    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />-->
+    <!--  android13 图片访问权限  -->
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"  />-->
+    <!--  android14 选择性照片和视频访问权限  -->
+<!--    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />-->
+
+</manifest>

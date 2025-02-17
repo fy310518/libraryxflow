@@ -1,0 +1,107 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+task generateSourcesJar(type: Jar){
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+android {
+    compileSdk 34
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 34
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+	dataBinding {
+        enabled = true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+	lintOptions {
+        abortOnError false
+        warning 'InvalidPackage'
+    }
+    packagingOptions {
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'publicsuffixes.gz'
+    }
+    kotlinOptions {
+        useIR = true
+        jvmTarget = '1.8'
+        freeCompilerArgs += ["-Xskip-prerelease-check"]
+    }
+
+    publishing {
+        singleVariant("release")
+    }
+
+}
+
+afterEvaluate {
+    publishing {
+        //发布的版本信息
+        publications{
+            release(MavenPublication) {
+                from components.release         // 表示发布 release（jitpack 都不会使用到）
+                groupId = 'github.com.fy310518' // 这个是依赖库的组 id
+                artifactId = 'fyLibraryx'       // 依赖库的名称（jitpack 都不会使用到）
+                version ="1.0.0"                //当前版本依赖库版本号，这个jitpack不会使用到，只是我们开发者自己查看
+            }
+        }
+    }
+}
+
+
+dependencies {
+    implementation "androidx.appcompat:appcompat:1.6.0"
+    implementation "androidx.recyclerview:recyclerview:1.2.0"
+    implementation "com.google.android.material:material:1.2.1"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.1"
+    implementation "androidx.lifecycle:lifecycle-viewmodel:2.2.0"
+
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0'
+    implementation 'com.google.code.gson:gson:2.11.0'
+
+    //    retrofit2
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //编译时有效 不参与打包
+    compileOnly 'org.jsoup:jsoup:1.10.3'
+    compileOnly('com.squareup.retrofit2:converter-simplexml:2.1.0'){
+        exclude group:'xpp3',module:'xpp3'
+        exclude group:'stax',module:'stax-api'
+        exclude group:'stax',module:'stax'
+    }
+
+    //    glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    implementation 'com.github.bumptech.glide:annotations:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    implementation ('com.github.bumptech.glide:okhttp3-integration:4.11.0'){
+        exclude group: 'com.squareup.okhttp3'
+    }
+
+    //aop
+//    implementation 'org.aspectj:aspectjrt:1.9.5'
+}
