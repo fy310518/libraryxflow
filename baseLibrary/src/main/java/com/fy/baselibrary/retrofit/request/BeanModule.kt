@@ -1,5 +1,6 @@
 package com.fy.baselibrary.retrofit.request
 
+import com.fy.baselibrary.application.ioc.ConfigUtils
 import com.fy.baselibrary.retrofit.observer.BaseBean
 import com.google.gson.annotations.SerializedName
 
@@ -25,6 +26,18 @@ data class BeanModule<T>(
 
     override fun getResultData() = result
 
-    override fun isSuccess() = code == 0
+    override fun isSuccess(): Boolean {
+        if (ConfigUtils.getSuccessCode().size == 0) {
+            return code == 0
+        } else {
+            for (i in ConfigUtils.getSuccessCode()) {
+                if (code == i) {
+                    return true
+                }
+            }
+
+            return true
+        }
+    }
 
 }

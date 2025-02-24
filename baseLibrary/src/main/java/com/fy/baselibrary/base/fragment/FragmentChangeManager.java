@@ -233,6 +233,10 @@ public class FragmentChangeManager {
         return this;
     }
 
+    public FragmentChangeManager mContainerViewId(int containerViewId) {
+        this.mContainerViewId = containerViewId;
+        return this;
+    }
 
     public int getCurrentTab() {
         return currentIndex;

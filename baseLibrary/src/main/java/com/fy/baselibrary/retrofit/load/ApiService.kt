@@ -24,15 +24,18 @@ interface ApiService {
 //    应用层 新建 一个 xxService 接口，复制下面 三个接口方法，beanModle 修改成 自己的
     //普通get 请求
     @GET
+    @Headers(value = ["CONNECT_TIMEOUT:60000", "READ_TIMEOUT:60000", "WRITE_TIMEOUT:60000"])
     suspend fun getCompose(@Url apiUrl: String, @QueryMap params: ArrayMap<String, Any>): BeanModule<Any>
 
     //普通post 请求【请求参数 json格式 】
     @POST
+    @Headers(value = ["CONNECT_TIMEOUT:60000", "READ_TIMEOUT:60000", "WRITE_TIMEOUT:60000"])
     suspend fun postCompose(@Url apiUrl: String, @Body params: ArrayMap<String, Any>): BeanModule<Any>
 
     //普通post 请求【表单提交】
     @FormUrlEncoded
     @POST
+    @Headers(value = ["CONNECT_TIMEOUT:60000", "READ_TIMEOUT:60000", "WRITE_TIMEOUT:60000"])
     suspend fun postFormCompose(@Url apiUrl: String, @FieldMap params: ArrayMap<String, Any>): BeanModule<Any>
 
 

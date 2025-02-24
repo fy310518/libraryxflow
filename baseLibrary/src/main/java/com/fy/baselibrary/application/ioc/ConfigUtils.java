@@ -101,6 +101,10 @@ public class ConfigUtils {
         return ConfigUtils.getInstance().builder.cerFileNames;
     }
 
+    public static List<Integer> getSuccessCode() {
+        return ConfigUtils.getInstance().builder.successCode;
+    }
+
     public static int getTitleColor(){
         return ConfigUtils.getInstance().builder.titleColor;
     }
@@ -139,6 +143,8 @@ public class ConfigUtils {
 
         /** 网络请求 服务器地址 url */
         String BASE_URL = "";
+        /** 网络请求 成功 状态码 */
+        List<Integer> successCode = new ArrayList<>();
         /** 默认的超时时间 单位毫秒 */
         public long timeout = 60 * 1000;
         /** https 公钥证书字符串 */
@@ -186,6 +192,10 @@ public class ConfigUtils {
 
         public ConfigBuilder setBASE_URL(String BASE_URL) {
             this.BASE_URL = BASE_URL;
+            return this;
+        }
+        public ConfigBuilder setSuccessCode(int successCode) {
+            this.successCode.add(successCode);
             return this;
         }
 

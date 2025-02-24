@@ -54,6 +54,8 @@ public class ListItemDecoration extends RecyclerView.ItemDecoration {
 
         // 第1个Item不绘制(此处：不设置间隔)分割线
         if (itemPosition == 0) return;
+//        state.getItemCount()-1;           //最后一条的postion
+        if(!builder.isDrawLastItem && itemPosition == state.getItemCount() -1) return;
 
         if (builder.orientation == LinearLayoutManager.VERTICAL) {
             outRect.set(0, builder.mSpace, 0, 0);//设置 列表item 四个方向的padding
@@ -123,6 +125,9 @@ public class ListItemDecoration extends RecyclerView.ItemDecoration {
          */
         public boolean isDraw = true;
 
+        /** 最后一个item 是否绘制 分割线 */
+        public boolean isDrawLastItem = true;
+
         /**
          * 设置间隔 宽度
          * （如果参数不为 0，则表示 只设置间隔；
@@ -136,7 +141,11 @@ public class ListItemDecoration extends RecyclerView.ItemDecoration {
         public int orientation = LinearLayoutManager.VERTICAL;
 
         public Builder setDraw(boolean draw) {
-            isDraw = draw;
+            this.isDraw = draw;
+            return this;
+        }
+        public Builder setDrawLastItem(boolean isDrawLastItem) {
+            this.isDrawLastItem = isDrawLastItem;
             return this;
         }
 
