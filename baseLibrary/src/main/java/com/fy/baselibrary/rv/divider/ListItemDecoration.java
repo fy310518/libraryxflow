@@ -149,8 +149,12 @@ public class ListItemDecoration extends RecyclerView.ItemDecoration {
             return this;
         }
 
-        public Builder setmSpace(@DimenRes int dimenId) {
+        public Builder setSpaceId(@DimenRes int dimenId) {
             this.mSpace = (int) ResUtils.getDimen(dimenId);
+            return this;
+        }
+        public Builder setSpace(int space) {
+            this.mSpace = space;
             return this;
         }
 
