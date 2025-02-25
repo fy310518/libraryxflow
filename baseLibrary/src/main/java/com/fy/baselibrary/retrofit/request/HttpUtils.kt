@@ -57,7 +57,9 @@ object HttpUtils {
      * @param apiUrl 请求Url
      * @param params 请求参数
      */
-    fun <T> httpGet(typeOfT: TypeToken<T>? = null, clazz: Class<T>, apiUrl: String,
+    fun <T> httpGet(
+        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
+        apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
@@ -74,7 +76,9 @@ object HttpUtils {
     }
 
 
-    fun <T> postCompose(typeOfT: TypeToken<T>? = null, clazz: Class<T>, apiUrl: String,
+    fun <T> postCompose(
+        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
+        apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
@@ -90,9 +94,12 @@ object HttpUtils {
             .flowNext(progressDialog)
     }
 
-    fun <T : Any> postForm(typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null, apiUrl: String,
+    fun <T : Any> postForm(
+        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
+        apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null): Flow<T> {
+        progressDialog: IProgressDialog? = null
+    ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
