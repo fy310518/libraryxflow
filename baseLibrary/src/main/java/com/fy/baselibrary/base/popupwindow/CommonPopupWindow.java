@@ -76,6 +76,7 @@ public abstract class CommonPopupWindow extends PopupWindow {
 
         convertView(ViewHolder.createViewHolder(mContext, view));
 
+        bgAlpha(bgAlpha);
         initParams(view);
         return this;
     }
@@ -157,15 +158,6 @@ public abstract class CommonPopupWindow extends PopupWindow {
     }
 
 
-
-    /**
-     * 设置添加屏幕的背景透明度
-     * @return
-     */
-    public CommonPopupWindow bgAlpha() {
-        bgAlpha(bgAlpha);
-        return this;
-    }
 
     /**
      * 设置 弹窗宽度占屏幕百分比
