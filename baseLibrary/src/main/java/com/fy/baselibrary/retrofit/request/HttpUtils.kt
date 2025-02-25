@@ -58,9 +58,9 @@ object HttpUtils {
      * @param params 请求参数
      */
     fun <T> httpGet(
-        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
         return flow {
@@ -77,9 +77,9 @@ object HttpUtils {
 
 
     fun <T> postCompose(
-        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
         return flow {
@@ -95,9 +95,9 @@ object HttpUtils {
     }
 
     fun <T : Any> postForm(
-        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
         return flow {
