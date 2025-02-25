@@ -55,19 +55,21 @@ object HttpUtils {
      * @param typeOfT 请求完成后 返回数据对象 [通用类型，集合，对象，都可以]
      * @param clazz  请求完成后 返回数据对象 [仅对象]
      * @param apiUrl 请求Url
-     * @param params 请求参数
+     * @param params 请求体
+     * @param headers 请求头
      */
     fun <T> httpGet(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
             val result = RequestUtils.create(ApiService::class.java)
-                .getCompose(apiUrl, params)
+                .getCompose(apiUrl, headers, params)
 
             emit(result)
         }
@@ -80,13 +82,14 @@ object HttpUtils {
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
             val result = RequestUtils.create(ApiService::class.java)
-                .postCompose(apiUrl, params)
+                .postCompose(apiUrl, headers, params)
 
             emit(result)
         }
@@ -98,13 +101,14 @@ object HttpUtils {
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         progressDialog: IProgressDialog? = null
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
             val result = RequestUtils.create(ApiService::class.java)
-                .postFormCompose(apiUrl, params)
+                .postFormCompose(apiUrl, headers, params)
 
             emit(result)
         }

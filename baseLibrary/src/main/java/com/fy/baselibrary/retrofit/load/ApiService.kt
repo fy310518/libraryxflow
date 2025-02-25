@@ -11,6 +11,7 @@ import retrofit2.http.FieldMap
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -24,16 +25,22 @@ interface ApiService {
 //    应用层 新建 一个 xxService 接口，复制下面 三个接口方法，beanModle 修改成 自己的
     //普通get 请求
     @GET
-    suspend fun getCompose(@Url apiUrl: String, @QueryMap params: ArrayMap<String, Any>): BeanModule<Any>
+    suspend fun getCompose(@Url apiUrl: String,
+                           @HeaderMap heads: ArrayMap<String, Any>,
+                           @QueryMap params: ArrayMap<String, Any>): BeanModule<Any>
 
     //普通post 请求【请求参数 json格式 】
     @POST
-    suspend fun postCompose(@Url apiUrl: String, @Body params: ArrayMap<String, Any>): BeanModule<Any>
+    suspend fun postCompose(@Url apiUrl: String,
+                            @HeaderMap heads: ArrayMap<String, Any>,
+                            @Body params: ArrayMap<String, Any>): BeanModule<Any>
 
     //普通post 请求【表单提交】
     @FormUrlEncoded
     @POST
-    suspend fun postFormCompose(@Url apiUrl: String, @FieldMap params: ArrayMap<String, Any>): BeanModule<Any>
+    suspend fun postFormCompose(@Url apiUrl: String,
+                                @HeaderMap heads: ArrayMap<String, Any>,
+                                @FieldMap params: ArrayMap<String, Any>): BeanModule<Any>
 
 
     /**
