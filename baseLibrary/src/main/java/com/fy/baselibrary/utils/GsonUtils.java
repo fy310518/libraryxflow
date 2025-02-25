@@ -111,6 +111,14 @@ public class GsonUtils {
         return gson.fromJson(json, typeOfT);
     }
 
+    public static<T> T fromJson(String json, TypeToken<T> typeToken) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(new TypeToken<ArrayMap<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
+                .create();
+
+        return gson.fromJson(json, typeToken);
+    }
+
     /**
      * json字符串 转换成 json对象
      * @param jsonStr
@@ -143,8 +151,8 @@ public class GsonUtils {
      * @param <T>
      * @return
      */
-    public static <T> List<T> jsonToList(String jsonStr, Class<T> clazz) {
-        List<T> lst = new ArrayList<>();
+    public static <T> ArrayList<T> jsonToList(String jsonStr, Class<T> clazz) {
+        ArrayList<T> lst = new ArrayList<>();
 
         try {
             JsonArray array = JsonParser.parseString(jsonStr).getAsJsonArray();
@@ -157,26 +165,6 @@ public class GsonUtils {
 
         return lst;
     }
-
-    public static <T> List<T> jsonToList(String jsonStr, Type typeOfT) {
-        List<T> lst = new ArrayList<>();
-
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(new TypeToken<ArrayMap<String,Object>>(){}.getType(), new ObjectTypeAdapterRewrite())
-                .create();
-
-        try {
-            JsonArray array = JsonParser.parseString(jsonStr).getAsJsonArray();
-            for (final JsonElement elem : array) {
-                lst.add(gson.fromJson(elem, typeOfT));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return lst;
-    }
-
 
 
 

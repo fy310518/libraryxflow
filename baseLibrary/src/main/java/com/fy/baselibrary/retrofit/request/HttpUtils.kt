@@ -20,6 +20,7 @@ import com.fy.baselibrary.utils.GsonUtils
 import com.fy.baselibrary.utils.cache.SpfAgent
 import com.fy.baselibrary.utils.media.UriUtils
 import com.fy.baselibrary.utils.notify.L
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
@@ -36,212 +37,225 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.RandomAccessFile
+import java.lang.reflect.Type
 
-class HttpUtils {
+object HttpUtils {
 
-    companion object {
         val CALL_BACK_LENGTH: Long = (1024 * 1024).toLong()
 
 
-        /**
-         * 获取get 请求 被观察者，最终返回 Flow
-         *
-         * 当 返回数据不匹配时候，
-         * 1、复制 BeanModule 按需求 添加 属性名
-         * 2、复制 ApiService 把 返回的 BeanModle 改成 自己的
-         * 3、复制 HttpUtils（httpGet，postCompose，postForm）三个方法
-         *
-         * @param clazz  请求完成后 返回数据对象
-         * @param apiUrl 请求Url
-         * @param params 请求参数
-         */
-        fun <T> httpGet(clazz: Class<T>, apiUrl: String,
-                              params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-                              progressDialog: IProgressDialog? = null): Flow<T> {
-            return flow {
-                L.e("request", "请求执行--> ${Thread.currentThread().name}")
+    /**
+     * 获取get 请求 被观察者，最终返回 Flow
+     *
+     * 当 返回数据不匹配时候，
+     * 1、复制 BeanModule 按需求 添加 属性名
+     * 2、复制 ApiService 把 返回的 BeanModle 改成 自己的
+     * 3、复制 HttpUtils（httpGet，postCompose，postForm）三个方法
+     *
+     * @param typeOfT 请求完成后 返回数据对象 [通用类型，集合，对象，都可以]
+     * @param clazz  请求完成后 返回数据对象 [仅对象]
+     * @param apiUrl 请求Url
+     * @param params 请求参数
+     */
+    fun <T> httpGet(typeOfT: TypeToken<T>? = null, clazz: Class<T>, apiUrl: String,
+        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        progressDialog: IProgressDialog? = null
+    ): Flow<T> {
+        return flow {
+            L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
-                val result = RequestUtils.create(ApiService::class.java)
-                    .getCompose(apiUrl, params)
+            val result = RequestUtils.create(ApiService::class.java)
+                .getCompose(apiUrl, params)
 
-                emit(result)
-            }
-                .flowConverter(clazz)
-                .flowNext(progressDialog)
+            emit(result)
         }
+            .flowConverter(typeOfT, clazz)
+            .flowNext(progressDialog)
+    }
 
 
-        fun <T> postCompose(clazz: Class<T>, apiUrl: String,
-                            params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-                            progressDialog: IProgressDialog? = null): Flow<T> {
-            return flow {
-                L.e("request", "请求执行--> ${Thread.currentThread().name}")
+    fun <T> postCompose(typeOfT: TypeToken<T>? = null, clazz: Class<T>, apiUrl: String,
+        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        progressDialog: IProgressDialog? = null
+    ): Flow<T> {
+        return flow {
+            L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
-                val result = RequestUtils.create(ApiService::class.java)
-                    .postCompose(apiUrl, params)
+            val result = RequestUtils.create(ApiService::class.java)
+                .postCompose(apiUrl, params)
 
-                emit(result)
-            }
-                .flowConverter(clazz)
-                .flowNext(progressDialog)
+            emit(result)
         }
+            .flowConverter(typeOfT, clazz)
+            .flowNext(progressDialog)
+    }
 
-        fun <T> postForm(clazz: Class<T>, apiUrl: String,
-                         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-                         progressDialog: IProgressDialog? = null): Flow<T> {
-            return flow {
-                L.e("request", "请求执行--> ${Thread.currentThread().name}")
+    fun <T : Any> postForm(typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null, apiUrl: String,
+        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        progressDialog: IProgressDialog? = null): Flow<T> {
+        return flow {
+            L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
-                val result = RequestUtils.create(ApiService::class.java)
-                    .postFormCompose(apiUrl, params)
+            val result = RequestUtils.create(ApiService::class.java)
+                .postFormCompose(apiUrl, params)
 
-                emit(result)
-            }
-                .flowConverter(clazz)
-                .flowNext(progressDialog)
+            emit(result)
         }
+            .flowConverter(typeOfT, clazz)
+            .flowNext(progressDialog)
+    }
 
 
-        fun <T, I: BaseBean<Any>> Flow<I>.flowConverter(clazz: Class<T>): Flow<T> {
-            return map { result->
-                if (result.isSuccess()) {
-                    val data = run {
-                        val jsonData = GsonUtils.toJson(result.getResultData())
+    fun <T, I : BaseBean<Any>> Flow<I>.flowConverter(typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null): Flow<T> {
+        return map { result ->
+            if (result.isSuccess()) {
+                val data = run {
+                    val jsonData = GsonUtils.toJson(result.getResultData())
+                    if (typeOfT != null) {
+                        GsonUtils.fromJson(jsonData, typeOfT)
+                    } else if (clazz != null) {
                         GsonUtils.fromJson(jsonData, clazz)
+                    } else {
+                        throw ServerException("Type cannot be empty", result.getResultCode())
                     }
+                }
 
-                    data
+                data
+            } else {
+                throw ServerException(result.getResultMsg(), result.getResultCode())
+            }
+        }
+    }
+
+    fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog?): Flow<T> {
+        return flowOn(Dispatchers.IO)
+            .onStart {
+                L.e("request", "请求开始--> ${Thread.currentThread().name}")
+                progressDialog?.show()
+            }
+            .onCompletion { cause ->
+                L.e("request", "请求结束--> ${Thread.currentThread().name}")
+                progressDialog?.close()
+            }
+            .catch { ex ->
+                ex.printStackTrace()
+            }
+
+//            .collect {
+//                return it
+//            }
+    }
+
+    fun <R> uploadFile(
+        apiUrl: String, files: ArrayList<R>,
+        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        progressDialog: IProgressDialog? = null,
+        progressCallback: ((Float) -> Unit)? = null
+    ): Flow<Any> {
+
+        val channel = Channel<Float>()
+        GlobalScope.launch {
+            for (proress in channel) {
+                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
+                progressCallback?.invoke(proress)
+            }
+        }
+        return flow {
+            L.e("request", "请求执行--> ${Thread.currentThread().name}")
+
+            val item = files[0]
+            if (item is String) params["filePathList"] = files
+            else if (item is File) params["files"] = files
+            else throw Exception("param exception")
+
+            params["ProgressChannel"] = channel
+            params["uploadFile"] = "files"
+            params["isFileKeyAES"] = false
+            RequestUtils.create(ApiService::class.java)
+                .uploadFile(apiUrl, params)
+
+            for (proress in channel) {
+                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
+                emit(proress)
+            }
+
+            emit("data")
+        }
+            .flowOn(Dispatchers.IO)
+            .onStart {
+                L.e("request", "请求开始--> ${Thread.currentThread().name}")
+                progressDialog?.show()
+            }
+            .onCompletion { cause ->
+                L.e("request", "请求结束--> ${Thread.currentThread().name}")
+                progressDialog?.close()
+                channel?.close()
+            }
+            .catch { ex ->
+                ex.printStackTrace()
+                channel?.close()
+            }
+    }
+
+
+    /**
+     * 下载文件
+     */
+    fun downLoadFile(
+        downUrl: String,
+        targetPath: String,
+        reNameFile: String,
+        progressDialog: IProgressDialog?,
+        isReturnProcess: Boolean = false
+    ): Flow<TransmissionState> {
+
+        return flow {
+            var filePath: String = targetPath
+            filePath = if (!TextUtils.isEmpty(filePath)) {
+                if (filePath.contains(AppUtils.getLocalPackageName())) { // 下载到 指定的私有目录
+                    FileUtils.folderIsExists(filePath).path
                 } else {
-                    throw ServerException(result.getResultMsg(), result.getResultCode())
+                    FileUtils.getSDCardDirectoryTpye(filePath) + ConfigUtils.getFilePath()
+                }
+            } else {
+                FileUtils.folderIsExists(FileUtils.DOWN, 0).path
+            }
+
+            val tempFile = FileUtils.getTempFile(downUrl, filePath)
+
+            var targetFile = FileUtils.getFile(downUrl, filePath)
+            if (!TextUtils.isEmpty(reNameFile)) { // 找最终下载完成的 文件
+                targetFile = File(filePath, reNameFile)
+            }
+            val downParam = if (targetFile.exists()) {
+                targetFile.path
+            } else {
+                "bytes=" + tempFile.length() + "-"
+            }
+
+            val responseBody = RequestUtils.create(ApiService::class.java)
+                .download(downParam, downUrl)
+
+            val file = saveFile(responseBody, downUrl, filePath) {
+                if (isReturnProcess) {
+                    emit(TransmissionState.InProgress(it))
                 }
             }
-        }
 
-        fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog?): Flow<T> {
-            return flowOn(Dispatchers.IO)
-                .onStart {
-                    L.e("request", "请求开始--> ${Thread.currentThread().name}")
-                    progressDialog?.show()
-                }
-                .onCompletion { cause ->
-                    L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                    progressDialog?.close()
-                }
-                .catch { ex ->
-                    ex.printStackTrace()
-                }
-
-    //            .collect {
-    //                return it
-    //            }
-        }
-
-        fun <R> uploadFile(apiUrl: String, files: ArrayList<R>,
-                           params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-                           progressDialog: IProgressDialog? = null,
-                           progressCallback: ((Float) -> Unit)? = null): Flow<Any> {
-
-            val channel = Channel<Float>()
-            GlobalScope.launch {
-                for(proress in channel){
-                    L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
-                    progressCallback?.invoke(proress)
-                }
+            emit(TransmissionState.Success(file))
+        }.flowOn(Dispatchers.IO)
+            .onStart {
+                L.e("request", "请求开始--> ${Thread.currentThread().name}")
+                progressDialog?.show()
             }
-            return flow {
-                L.e("request", "请求执行--> ${Thread.currentThread().name}")
-
-                val item = files[0]
-                if (item is String) params["filePathList"] = files
-                else if (item is File) params["files"] = files
-                else throw Exception("param exception")
-
-                params["ProgressChannel"] = channel
-                params["uploadFile"] = "files"
-                params["isFileKeyAES"] = false
-                RequestUtils.create(ApiService::class.java)
-                    .uploadFile(apiUrl, params)
-
-                for(proress in channel){
-                    L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
-                    emit(proress)
-                }
-
-                emit("data")
+            .onCompletion { cause ->
+                L.e("request", "请求结束--> ${Thread.currentThread().name}")
+                progressDialog?.close()
             }
-                .flowOn(Dispatchers.IO)
-                .onStart {
-                    L.e("request", "请求开始--> ${Thread.currentThread().name}")
-                    progressDialog?.show()
-                }
-                .onCompletion { cause ->
-                    L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                    progressDialog?.close()
-                    channel?.close()
-                }
-                .catch { ex ->
-                    ex.printStackTrace()
-                    channel?.close()
-                }
-        }
-
-
-        /**
-         * 下载文件
-         */
-         fun downLoadFile(downUrl: String,
-                          targetPath: String,
-                          reNameFile: String,
-                          progressDialog: IProgressDialog?,
-                          isReturnProcess: Boolean = false): Flow<TransmissionState> {
-
-             return flow {
-                 var filePath: String = targetPath
-                 filePath = if (!TextUtils.isEmpty(filePath)) {
-                     if (filePath.contains(AppUtils.getLocalPackageName())) { // 下载到 指定的私有目录
-                         FileUtils.folderIsExists(filePath).path
-                     } else {
-                         FileUtils.getSDCardDirectoryTpye(filePath) + ConfigUtils.getFilePath()
-                     }
-                 } else {
-                     FileUtils.folderIsExists(FileUtils.DOWN, 0).path
-                 }
-
-                 val tempFile = FileUtils.getTempFile(downUrl, filePath)
-
-                 var targetFile = FileUtils.getFile(downUrl, filePath)
-                 if (!TextUtils.isEmpty(reNameFile)) { // 找最终下载完成的 文件
-                     targetFile = File(filePath, reNameFile)
-                 }
-                 val downParam = if (targetFile.exists()) {
-                     targetFile.path
-                 } else {
-                     "bytes=" + tempFile.length() + "-"
-                 }
-
-                 val responseBody = RequestUtils.create(ApiService::class.java)
-                     .download(downParam, downUrl)
-
-                 val file = saveFile(responseBody, downUrl, filePath){
-                     if (isReturnProcess) {
-                         emit(TransmissionState.InProgress(it))
-                     }
-                 }
-
-                 emit(TransmissionState.Success(file))
-             }.flowOn(Dispatchers.IO)
-                 .onStart {
-                     L.e("request", "请求开始--> ${Thread.currentThread().name}")
-                     progressDialog?.show()
-                 }
-                 .onCompletion { cause ->
-                     L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                     progressDialog?.close()
-                 }
-                 .catch { ex ->
-                     ex.printStackTrace()
-                 }
-        }
+            .catch { ex ->
+                ex.printStackTrace()
+            }
+    }
 
         /**
          * 根据ResponseBody 写文件
@@ -401,7 +415,6 @@ class HttpUtils {
 
             return file
         }
-    }
 
 
 }

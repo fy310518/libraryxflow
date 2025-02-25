@@ -1,5 +1,7 @@
 package com.fy.baselibrary.base.popupwindow;
 
+import android.content.Context;
+
 import androidx.annotation.LayoutRes;
 
 import com.fy.baselibrary.base.ViewHolder;
@@ -13,6 +15,7 @@ public class NicePopup extends CommonPopupWindow {
     PopupConvertListener convertListener;
 
     public NicePopup(Builder builder) {
+        super(builder.mContext);
         this.layoutId = builder.layoutId;
         this.convertListener = builder.convertListener;
     }
@@ -38,6 +41,8 @@ public class NicePopup extends CommonPopupWindow {
 
     public static class Builder {
 
+        protected Context mContext;
+
         @LayoutRes
         protected int layoutId;
         PopupConvertListener convertListener;
@@ -57,7 +62,8 @@ public class NicePopup extends CommonPopupWindow {
         }
 
 
-        public NicePopup create() {
+        public NicePopup create(Context context) {
+            this.mContext = context;
             return new NicePopup(this);
         }
 

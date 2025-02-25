@@ -58,22 +58,23 @@ public abstract class CommonPopupWindow extends PopupWindow {
     /** 渲染数据到View中 */
     public abstract void convertView(ViewHolder holder);
 
-    public CommonPopupWindow() {}
+    private CommonPopupWindow() {}
+
+    public CommonPopupWindow(Context context) {
+        mContext = context;
+    }
 
     /**
      * 绘制 Popup UI
      * 数据构建完成后，必须调用此方法，不然popupWindow 没有内容
-     * @param context
      */
-    public CommonPopupWindow onCreateView(Context context) {
-        mContext = context;
-
+    protected CommonPopupWindow onCreateView() {
         layoutId = initLayoutId();
 
-        view = LayoutInflater.from(context).inflate(layoutId, null);
+        view = LayoutInflater.from(mContext).inflate(layoutId, null);
         DensityUtils.measureWidthAndHeight(view);
 
-        convertView(ViewHolder.createViewHolder(context, view));
+        convertView(ViewHolder.createViewHolder(mContext, view));
 
         initParams(view);
         return this;
@@ -126,14 +127,22 @@ public abstract class CommonPopupWindow extends PopupWindow {
 
     @Override
     public void showAsDropDown(View anchor) {
+        onCreateView();
         popupShowAdapter(anchor);
         super.showAsDropDown(anchor);
     }
 
     @Override
     public void showAsDropDown(View anchor, int xoff, int yoff) {
+        onCreateView();
         popupShowAdapter(anchor);
         super.showAsDropDown(anchor, xoff, yoff);
+    }
+
+    @Override
+    public void showAtLocation(View parent, int gravity, int x, int y) {
+        onCreateView();
+        super.showAtLocation(parent, gravity, x, y);
     }
 
     /** 适配 7.0 以上版本 popupwindow 显示全屏问题 */
