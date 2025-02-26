@@ -24,6 +24,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.fy.baselibrary.R;
@@ -159,7 +160,7 @@ public class AnimUtils {
      * @param <BVM>
      * @return ViewModel
      */
-    public static <BVM extends BaseViewModel> BVM createViewModel(Object obj) {
+    public static <BVM extends AndroidViewModel> BVM createViewModel(Object obj) {
         Class modelClass = null;
 
         if (obj instanceof Fragment){

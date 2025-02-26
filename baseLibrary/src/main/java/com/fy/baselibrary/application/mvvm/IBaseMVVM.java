@@ -4,13 +4,14 @@ import android.os.Bundle;
 
 import androidx.annotation.LayoutRes;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.AndroidViewModel;
 
 /**
  * description：mvvm 架构 之 activity 实现接口 统一规范；
  * 项目自己创建的 activity 建议实现 此 接口
  * Created by fangs on 2022/7/4 16:58.
  */
-public interface IBaseMVVM<VM extends BaseViewModel, VDB extends ViewDataBinding> {
+public interface IBaseMVVM<VM extends AndroidViewModel, VDB extends ViewDataBinding> {
 
     /**
      * 设置 activity 布局 ID

@@ -18,6 +18,7 @@ import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.AndroidViewModel;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
@@ -36,7 +37,7 @@ import java.lang.reflect.Field;
  * 应用 所有dialog 的父类
  * Created by fangs on 2017/3/13.
  */
-public abstract class CommonDialog<VM extends BaseViewModel, VDB extends ViewDataBinding> extends DialogFragment {
+public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends ViewDataBinding> extends DialogFragment {
     /**
      * 统一 弹窗宽度占屏幕百分比
      */

@@ -19,9 +19,9 @@ import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
 
-import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.base.fragment.FragmentChangeManager;
 import com.fy.baselibrary.utils.AnimUtils;
@@ -56,7 +56,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 //        BaseActivityBean activityBean = new BaseActivityBean();
 
         ViewDataBinding vdb = null;
-        BaseViewModel bvm = null;
+        AndroidViewModel bvm = null;
         IBaseMVVM act = null;
         if (activity instanceof IBaseMVVM) {
             act = (IBaseMVVM) activity;

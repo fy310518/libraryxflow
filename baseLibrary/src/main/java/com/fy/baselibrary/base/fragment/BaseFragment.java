@@ -13,8 +13,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.AndroidViewModel;
 
-import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.statuslayout.LoadSirUtils;
 import com.fy.baselibrary.statuslayout.OnSetStatusView;
@@ -28,7 +28,7 @@ import com.fy.baselibrary.utils.notify.L;
  * Fragment 基类
  * Created by fangs on 2017/4/26.
  */
-public abstract class BaseFragment<VM extends BaseViewModel, VDB extends ViewDataBinding> extends Fragment implements IBaseMVVM<VM, VDB>, View.OnClickListener, OnSetStatusView {
+public abstract class BaseFragment<VM extends AndroidViewModel, VDB extends ViewDataBinding> extends Fragment implements IBaseMVVM<VM, VDB>, View.OnClickListener, OnSetStatusView {
     public final String TAG = "lifeCycle --> " + getClass().getSimpleName();
 
     protected AppCompatActivity mContext;
