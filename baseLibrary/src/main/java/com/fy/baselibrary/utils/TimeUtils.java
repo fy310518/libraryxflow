@@ -88,6 +88,32 @@ public class TimeUtils {
     }
 
     /**
+     * 指定日期 是否在日期范围內
+     * @return
+     */
+    public static boolean isCalendarInRange(Calendar targetCalendar, Calendar minCalendar, Calendar maxCalendar){
+        return targetCalendar.getTimeInMillis() >= minCalendar.getTimeInMillis()
+                && targetCalendar.getTimeInMillis() <= maxCalendar.getTimeInMillis();
+    }
+
+    public static boolean isCalendarInRange(
+            int targetYear, int targetYearMonth, int targetYearDay,
+            int minYear, int minYearMonth, int minYearDay,
+            int maxYear, int maxYearMonth, int maxYearDay
+    ) {
+        Calendar target = Calendar.getInstance();
+        target.set(targetYear, targetYearMonth - 1, targetYearDay);
+
+        Calendar min = Calendar.getInstance();
+        min.set(minYear, minYearMonth - 1, minYearDay);
+
+        Calendar max = Calendar.getInstance();
+        max.set(maxYear, maxYearMonth - 1, maxYearDay);
+
+        return isCalendarInRange(target, min, max);
+    }
+
+    /**
      * 获取 指定时间戳，指定 时间间隔， 的时间戳【如：获取当前时间点 后 50年3个月2天0时3分的 时间戳】
      * @param time
      * @param fieldMap key：日历字段。value：增加的时间【calendar.add(Calendar.YEAR, 50)】
