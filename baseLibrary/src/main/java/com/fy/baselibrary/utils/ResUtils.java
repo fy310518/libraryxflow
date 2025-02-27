@@ -92,6 +92,15 @@ public class ResUtils {
     }
 
     /**
+     * 获取 strings 资源文件 指定 id 的资源
+     * @param intArrayId 资源数组id
+     * @return int[]
+     */
+    public static int[] getIntArray(@ArrayRes int intArrayId){
+        return ConfigUtils.getAppCtx().getResources().getIntArray(intArrayId);
+    }
+
+    /**
      * %d   （表示整数）
      * %f   （表示浮点数）
      * %s   （表示字符串）
