@@ -53,7 +53,6 @@ object HttpUtils {
      * 3、复制 HttpUtils（httpGet，postCompose，postForm）三个方法
      *
      * @param typeOfT 请求完成后 返回数据对象 [通用类型，集合，对象，都可以]
-     * @param clazz  请求完成后 返回数据对象 [仅对象]
      * @param apiUrl 请求Url
      * @param params 请求体
      * @param headers 请求头
@@ -61,24 +60,6 @@ object HttpUtils {
     fun <T> httpGet(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        clazz: Class<T>? = null,
-        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
-    ): Flow<T> {
-        return flow {
-            L.e("request", "请求执行--> ${Thread.currentThread().name}")
-
-            val result = RequestUtils.create(ApiService::class.java)
-                .getCompose(apiUrl, headers, params)
-
-            emit(result)
-        }
-            .flowConverter(null, clazz)
-            .flowNext()
-    }
-
-    fun <T> httpGet(
-        apiUrl: String = "",
-        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>? = null,
         headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
     ): Flow<T> {
@@ -90,27 +71,10 @@ object HttpUtils {
 
             emit(result)
         }
-            .flowConverter(typeOfT, null)
+            .flowConverter(typeOfT)
             .flowNext()
     }
 
-    fun <T> postCompose(
-        apiUrl: String = "",
-        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        clazz: Class<T>? = null,
-        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
-    ): Flow<T> {
-        return flow {
-            L.e("request", "请求执行--> ${Thread.currentThread().name}")
-
-            val result = RequestUtils.create(ApiService::class.java)
-                .postCompose(apiUrl, headers, params)
-
-            emit(result)
-        }
-            .flowConverter(null, clazz)
-            .flowNext()
-    }
     fun <T> postCompose(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
@@ -125,25 +89,7 @@ object HttpUtils {
 
             emit(result)
         }
-            .flowConverter(typeOfT, null)
-            .flowNext()
-    }
-
-    fun <T> postForm(
-        apiUrl: String = "",
-        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        clazz: Class<T>? = null,
-        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
-    ): Flow<T> {
-        return flow {
-            L.e("request", "请求执行--> ${Thread.currentThread().name}")
-
-            val result = RequestUtils.create(ApiService::class.java)
-                .postFormCompose(apiUrl, headers, params)
-
-            emit(result)
-        }
-            .flowConverter(null, clazz)
+            .flowConverter(typeOfT)
             .flowNext()
     }
 
@@ -161,20 +107,18 @@ object HttpUtils {
 
             emit(result)
         }
-            .flowConverter(typeOfT, null)
+            .flowConverter(typeOfT)
             .flowNext()
     }
 
 
-    fun <T, I : BaseBean<Any>> Flow<I>.flowConverter(typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null): Flow<T> {
+    fun <T, I : BaseBean<Any>> Flow<I>.flowConverter(typeOfT: TypeToken<T>? = null): Flow<T> {
         return map { result ->
             if (result.isSuccess()) {
                 val data = run {
                     val jsonData = GsonUtils.toJson(result.getResultData())
                     if (typeOfT != null) {
                         GsonUtils.fromJson(jsonData, typeOfT)
-                    } else if (clazz != null) {
-                        GsonUtils.fromJson(jsonData, clazz)
                     } else {
                         throw ServerException("Type cannot be empty", result.getResultCode())
                     }
