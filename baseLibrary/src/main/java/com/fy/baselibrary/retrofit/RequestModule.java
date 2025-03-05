@@ -116,7 +116,7 @@ public final class RequestModule {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                L.d("okhttp.OkHttpClient", message);
+                L.i("okhttp.OkHttpClient", message);
 //                FileUtils.fileToInputContent("log", "日志.txt", message);
             }
         });
