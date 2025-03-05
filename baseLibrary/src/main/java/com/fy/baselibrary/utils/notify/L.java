@@ -29,11 +29,11 @@ public class L {
             int end = MAX_LENGTH;
             for (int i = 0; i < 100; i++) {
                 if (strLength > end) {
-                    Log.i(TAG, info[1] + info[2] + " ---> " + msg.substring(start, end));
+                    Log.i(TAG, msg.substring(start, end));
                     start = end;
                     end = end + MAX_LENGTH;
                 } else {
-                    Log.i(TAG, info[1] + info[2] + " ---> " + msg.substring(start, strLength));
+                    Log.i(TAG, msg.substring(start, strLength));
                     break;
                 }
             }
@@ -48,11 +48,11 @@ public class L {
             int end = MAX_LENGTH;
             for (int i = 0; i < 100; i++) {
                 if (strLength > end) {
-                    Log.d(TAG, info[1] + info[2] + " ---> " + msg.substring(start, end));
+                    Log.d(TAG, msg.substring(start, end));
                     start = end;
                     end = end + MAX_LENGTH;
                 } else {
-                    Log.d(TAG, info[1] + info[2] + " ---> " + msg.substring(start, strLength));
+                    Log.d(TAG, msg.substring(start, strLength));
                     break;
                 }
             }
@@ -67,11 +67,11 @@ public class L {
             int end = MAX_LENGTH;
             for (int i = 0; i < 100; i++) {
                 if (strLength > end) {
-                    Log.e(TAG, info[1] + info[2] + " ---> " + msg.substring(start, end));
+                    Log.e(TAG, msg.substring(start, end));
                     start = end;
                     end = end + MAX_LENGTH;
                 } else {
-                    Log.e(TAG, info[1] + info[2] + " ---> " + msg.substring(start, strLength));
+                    Log.e(TAG, msg.substring(start, strLength));
                     break;
                 }
             }
@@ -86,11 +86,11 @@ public class L {
             int end = MAX_LENGTH;
             for (int i = 0; i < 100; i++) {
                 if (strLength > end) {
-                    Log.v(TAG, info[1] + info[2] + " ---> " + msg.substring(start, end));
+                    Log.v(TAG, msg.substring(start, end));
                     start = end;
                     end = end + MAX_LENGTH;
                 } else {
-                    Log.v(TAG, info[1] + info[2] + " ---> " + msg.substring(start, strLength));
+                    Log.v(TAG, msg.substring(start, strLength));
                     break;
                 }
             }
@@ -107,11 +107,11 @@ public class L {
             int end = MAX_LENGTH;
             for (int i = 0; i < 100; i++) {
                 if (strLength > end) {
-                    Log.i(tag, info[1] + info[2] + " ---> " + msg.substring(start, end));
+                    Log.i(tag, msg.substring(start, end));
                     start = end;
                     end = end + MAX_LENGTH;
                 } else {
-                    Log.i(tag, info[1] + info[2] + " ---> " + msg.substring(start, strLength));
+                    Log.i(tag, msg.substring(start, strLength));
                     break;
                 }
             }
@@ -126,11 +126,11 @@ public class L {
             int end = MAX_LENGTH;
             for (int i = 0; i < 100; i++) {
                 if (strLength > end) {
-                    Log.d(tag, info[1] + info[2] + " ---> " + msg.substring(start, end));
+                    Log.d(tag, msg.substring(start, end));
                     start = end;
                     end = end + MAX_LENGTH;
                 } else {
-                    Log.d(tag, info[1] + info[2] + " ---> " + msg.substring(start, strLength));
+                    Log.d(tag, msg.substring(start, strLength));
                     break;
                 }
             }
@@ -165,11 +165,11 @@ public class L {
             int end = MAX_LENGTH;
             for (int i = 0; i < 100; i++) {
                 if (strLength > end) {
-                    Log.v(tag, info[1] + info[2] + " ---> " + msg.substring(start, end));
+                    Log.v(tag, msg.substring(start, end));
                     start = end;
                     end = end + MAX_LENGTH;
                 } else {
-                    Log.v(tag, info[1] + info[2] + " ---> " + msg.substring(start, strLength));
+                    Log.v(tag, msg.substring(start, strLength));
                     break;
                 }
             }
