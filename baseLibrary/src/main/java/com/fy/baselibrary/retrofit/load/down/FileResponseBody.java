@@ -35,7 +35,7 @@ public class FileResponseBody extends ResponseBody {
         this.requestUrl = requestUrl;
 
         listener = FileDownInterceptor.LISTENER_MAP.get(requestUrl);
-        L.e("文件长度", responseBody.contentLength() + "---文件下载---" + Thread.currentThread().getName());
+//        L.d("文件长度", responseBody.contentLength() + "---文件下载---" + Thread.currentThread().getName());
     }
 
     @Override

@@ -68,7 +68,7 @@ public final class RequestModule {
                 .readTimeout(ConfigUtils.getTimeout(), TimeUnit.MILLISECONDS)
                 .writeTimeout(ConfigUtils.getTimeout(), TimeUnit.MILLISECONDS)
                 .retryOnConnectionFailure(true)//错误重连
-                .addInterceptor(new RequestHeaderInterceptor())
+//                .addInterceptor(new RequestHeaderInterceptor())
                 .addInterceptor(new TimeoutInterceptor())
                 .addInterceptor(new FileDownInterceptor())
 //                .addInterceptor(new CacheCookiesInterceptor())
@@ -116,7 +116,7 @@ public final class RequestModule {
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
             @Override
             public void log(String message) {
-                L.e("net 请求or响应", message);
+                L.d("okhttp.OkHttpClient", message);
 //                FileUtils.fileToInputContent("log", "日志.txt", message);
             }
         });
