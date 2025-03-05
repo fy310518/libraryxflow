@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -60,10 +61,8 @@ object HttpUtils {
     fun <T> httpGet(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
-        headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null,
-        action: ((ex: Throwable) -> Throwable)? = null
+        clazz: Class<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
@@ -73,18 +72,33 @@ object HttpUtils {
 
             emit(result)
         }
-            .flowConverter(typeOfT, clazz)
-            .flowNext(progressDialog, action)
+            .flowConverter(null, clazz)
+            .flowNext()
     }
 
+    fun <T> httpGet(
+        apiUrl: String = "",
+        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        typeOfT: TypeToken<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
+    ): Flow<T> {
+        return flow {
+            L.e("request", "请求执行--> ${Thread.currentThread().name}")
+
+            val result = RequestUtils.create(ApiService::class.java)
+                .getCompose(apiUrl, headers, params)
+
+            emit(result)
+        }
+            .flowConverter(typeOfT, null)
+            .flowNext()
+    }
 
     fun <T> postCompose(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
-        headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null,
-        action: ((ex: Throwable) -> Throwable)? = null
+        clazz: Class<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
@@ -94,17 +108,32 @@ object HttpUtils {
 
             emit(result)
         }
-            .flowConverter(typeOfT, clazz)
-            .flowNext(progressDialog, action)
+            .flowConverter(null, clazz)
+            .flowNext()
     }
-
-    fun <T : Any> postForm(
+    fun <T> postCompose(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
-        headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null,
-        action: ((ex: Throwable) -> Throwable)? = null
+        typeOfT: TypeToken<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
+    ): Flow<T> {
+        return flow {
+            L.e("request", "请求执行--> ${Thread.currentThread().name}")
+
+            val result = RequestUtils.create(ApiService::class.java)
+                .postCompose(apiUrl, headers, params)
+
+            emit(result)
+        }
+            .flowConverter(typeOfT, null)
+            .flowNext()
+    }
+
+    fun <T> postForm(
+        apiUrl: String = "",
+        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        clazz: Class<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
@@ -114,8 +143,26 @@ object HttpUtils {
 
             emit(result)
         }
-            .flowConverter(typeOfT, clazz)
-            .flowNext(progressDialog, action)
+            .flowConverter(null, clazz)
+            .flowNext()
+    }
+
+    fun <T> postForm(
+        apiUrl: String = "",
+        params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        typeOfT: TypeToken<T>? = null,
+        headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
+    ): Flow<T> {
+        return flow {
+            L.e("request", "请求执行--> ${Thread.currentThread().name}")
+
+            val result = RequestUtils.create(ApiService::class.java)
+                .postFormCompose(apiUrl, headers, params)
+
+            emit(result)
+        }
+            .flowConverter(typeOfT, null)
+            .flowNext()
     }
 
 
@@ -140,33 +187,39 @@ object HttpUtils {
         }
     }
 
-    fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog?, action: ((ex: Throwable) -> Throwable)? = null): Flow<T> {
+    fun <T> Flow<T>.flowNext(): Flow<T> {
         return flowOn(Dispatchers.IO)
-            .onStart {
-                L.e("request", "请求开始--> ${Thread.currentThread().name}")
-                progressDialog?.show()
-            }
-            .onCompletion { cause ->
-                cause?.printStackTrace()
-
-                L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                progressDialog?.close()
-            }
             .catch { ex ->
-                action?.let {
-                    throw it.invoke(ex)
-                }
+                ex.printStackTrace()
+                L.e("request", "请求异常--> ${Thread.currentThread().name}")
             }
+    }
 
-//            .collect {
-//                return it
-//            }
+    /**
+     * 拓展Flow collect 函数，添加异常处理，进度条显示，进度条关闭
+     */
+    suspend fun <T> Flow<T>.collect(progressDialog: IProgressDialog? = null, action: ((ex: Throwable) -> Throwable)? = null, collector: FlowCollector<T>){
+        onStart {
+            L.e("request", "请求开始--> ${Thread.currentThread().name}")
+            progressDialog?.show()
+        }.onCompletion { cause ->
+            cause?.printStackTrace()
+
+            L.e("request", "请求结束--> ${Thread.currentThread().name}")
+            progressDialog?.close()
+        }
+        catch { ex ->
+            action?.let {
+                throw it.invoke(ex)
+            }
+        }.collect {
+            collector.emit(it)
+        }
     }
 
     fun <R> uploadFile(
         apiUrl: String, files: ArrayList<R>,
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null,
         progressCallback: ((Float) -> Unit)? = null
     ): Flow<Any> {
 
@@ -198,20 +251,15 @@ object HttpUtils {
 
             emit("data")
         }
-            .flowOn(Dispatchers.IO)
             .onStart {
                 L.e("request", "请求开始--> ${Thread.currentThread().name}")
-                progressDialog?.show()
             }
             .onCompletion { cause ->
                 L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                progressDialog?.close()
                 channel?.close()
             }
-            .catch { ex ->
-                ex.printStackTrace()
-                channel?.close()
-            }
+            .flowNext()
+
     }
 
 
@@ -222,7 +270,6 @@ object HttpUtils {
         downUrl: String,
         targetPath: String,
         reNameFile: String,
-        progressDialog: IProgressDialog?,
         isReturnProcess: Boolean = false
     ): Flow<TransmissionState> {
 
@@ -263,15 +310,11 @@ object HttpUtils {
         }.flowOn(Dispatchers.IO)
             .onStart {
                 L.e("request", "请求开始--> ${Thread.currentThread().name}")
-                progressDialog?.show()
             }
             .onCompletion { cause ->
                 L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                progressDialog?.close()
             }
-            .catch { ex ->
-                ex.printStackTrace()
-            }
+            .flowNext()
     }
 
         /**
