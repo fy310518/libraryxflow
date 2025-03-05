@@ -37,7 +37,6 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.RandomAccessFile
-import java.lang.reflect.Type
 
 object HttpUtils {
 
@@ -63,7 +62,8 @@ object HttpUtils {
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null
+        progressDialog: IProgressDialog? = null,
+        action: ((ex: Throwable) -> Throwable)? = null
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
@@ -74,7 +74,7 @@ object HttpUtils {
             emit(result)
         }
             .flowConverter(typeOfT, clazz)
-            .flowNext(progressDialog)
+            .flowNext(progressDialog, action)
     }
 
 
@@ -83,7 +83,8 @@ object HttpUtils {
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null
+        progressDialog: IProgressDialog? = null,
+        action: ((ex: Throwable) -> Throwable)? = null
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
@@ -94,7 +95,7 @@ object HttpUtils {
             emit(result)
         }
             .flowConverter(typeOfT, clazz)
-            .flowNext(progressDialog)
+            .flowNext(progressDialog, action)
     }
 
     fun <T : Any> postForm(
@@ -102,7 +103,8 @@ object HttpUtils {
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>? = null, clazz: Class<T>? = null,
         headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        progressDialog: IProgressDialog? = null
+        progressDialog: IProgressDialog? = null,
+        action: ((ex: Throwable) -> Throwable)? = null
     ): Flow<T> {
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
@@ -113,7 +115,7 @@ object HttpUtils {
             emit(result)
         }
             .flowConverter(typeOfT, clazz)
-            .flowNext(progressDialog)
+            .flowNext(progressDialog, action)
     }
 
 
@@ -138,18 +140,22 @@ object HttpUtils {
         }
     }
 
-    fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog?): Flow<T> {
+    fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog?, action: ((ex: Throwable) -> Throwable)? = null): Flow<T> {
         return flowOn(Dispatchers.IO)
             .onStart {
                 L.e("request", "请求开始--> ${Thread.currentThread().name}")
                 progressDialog?.show()
             }
             .onCompletion { cause ->
+                cause?.printStackTrace()
+
                 L.e("request", "请求结束--> ${Thread.currentThread().name}")
                 progressDialog?.close()
             }
             .catch { ex ->
-                ex.printStackTrace()
+                action?.let {
+                    throw it.invoke(ex)
+                }
             }
 
 //            .collect {

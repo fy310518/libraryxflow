@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentManager
 import com.fy.baselibrary.base.dialog.CommonDialog
 import com.fy.baselibrary.retrofit.NetAnimListener
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 
 /**
  * 自定义对话框的dialog
@@ -23,29 +22,20 @@ class IProgressDialog() {
 
     protected var netAnimListener: NetAnimListener? = null
 
-    protected var scope: CoroutineScope? = null
-
-
-
-    constructor(obj: Any, netAnimListener: NetAnimListener, scope: CoroutineScope? = null): this() {
+    constructor(obj: Any, netAnimListener: NetAnimListener): this() {
         this.obj = obj
         this.netAnimListener = netAnimListener
-        this.scope = scope
     }
 
-    constructor(obj: Any, dialog: CommonDialog<*, *>, scope: CoroutineScope? = null): this() {
+    constructor(obj: Any, dialog: CommonDialog<*, *>): this() {
         this.obj = obj
         this.mDialog = dialog
-        this.scope = scope
     }
 
 
     private fun runShowDialog(manager: FragmentManager){
         mDialog?.apply {
             if((null == dialog || dialog!!.isShowing)){
-                setDialogList{
-                    scope?.cancel()
-                }
                 show(manager, javaClass.name)
             }
         }

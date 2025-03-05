@@ -36,7 +36,7 @@ data class BeanModule<T>(
                 }
             }
 
-            return true
+            return false
         }
     }
 
