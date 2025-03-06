@@ -1,4 +1,4 @@
-package com.fy.baselibrary.retrofit.request
+package com.cozyla.choresreward.ui.familyweekly
 
 import android.content.ContentValues
 import android.net.Uri
@@ -41,7 +41,7 @@ import java.io.RandomAccessFile
 
 object HttpUtils {
 
-        val CALL_BACK_LENGTH: Long = (1024 * 1024).toLong()
+    val CALL_BACK_LENGTH: Long = (1024 * 1024).toLong()
 
 
     /**
@@ -72,7 +72,9 @@ object HttpUtils {
             emit(result)
         }
             .flowConverter(typeOfT)
-            .flowNext()
+
+//            .collect{ // 订阅
+//            }
     }
 
     fun <T> postCompose(
@@ -90,7 +92,6 @@ object HttpUtils {
             emit(result)
         }
             .flowConverter(typeOfT)
-            .flowNext()
     }
 
     fun <T> postForm(
@@ -108,7 +109,6 @@ object HttpUtils {
             emit(result)
         }
             .flowConverter(typeOfT)
-            .flowNext()
     }
 
 
@@ -128,38 +128,29 @@ object HttpUtils {
             } else {
                 throw ServerException(result.getResultMsg(), result.getResultCode())
             }
-        }
-    }
-
-    fun <T> Flow<T>.flowNext(): Flow<T> {
-        return flowOn(Dispatchers.IO)
-            .catch { ex ->
-                ex.printStackTrace()
-                L.e("request", "请求异常--> ${Thread.currentThread().name}")
-            }
+        }.flowOn(Dispatchers.IO)
     }
 
     /**
-     * 拓展Flow collect 函数，添加异常处理，进度条显示，进度条关闭
+     * 拓展 Flow 函数，添加异常处理，进度条显示，进度条关闭
      */
-    suspend fun <T> Flow<T>.collect(progressDialog: IProgressDialog? = null, action: ((ex: Throwable) -> Throwable)? = null, collector: FlowCollector<T>){
-        onStart {
-            L.e("request", "请求开始--> ${Thread.currentThread().name}")
-            progressDialog?.show()
-        }.onCompletion { cause ->
-            cause?.printStackTrace()
+    fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog? = null, action: ((ex: Throwable) -> Unit)? = null): Flow<T> {
+        return flowOn(Dispatchers.IO)
+            .onStart {
+                L.e("request", "请求开始--> ${Thread.currentThread().name}")
+                progressDialog?.show()
+            }.onCompletion { cause ->
+                cause?.printStackTrace()
 
-            L.e("request", "请求结束--> ${Thread.currentThread().name}")
-            progressDialog?.close()
-        }
-        catch { ex ->
-            action?.let {
-                throw it.invoke(ex)
+                L.e("request", "请求结束--> ${Thread.currentThread().name}")
+                progressDialog?.close()
             }
-        }.collect {
-            collector.emit(it)
-        }
+            .catch { ex ->
+                L.e("request", "请求异常--> ${Thread.currentThread().name}")
+                action?.invoke(ex)
+            }
     }
+
 
     fun <R> uploadFile(
         apiUrl: String, files: ArrayList<R>,
@@ -202,8 +193,7 @@ object HttpUtils {
                 L.e("request", "请求结束--> ${Thread.currentThread().name}")
                 channel?.close()
             }
-            .flowNext()
-
+            .flowOn(Dispatchers.IO)
     }
 
 
@@ -258,167 +248,167 @@ object HttpUtils {
             .onCompletion { cause ->
                 L.e("request", "请求结束--> ${Thread.currentThread().name}")
             }
-            .flowNext()
+
     }
 
-        /**
-         * 根据ResponseBody 写文件
-         * @param responseBody
-         * @param url
-         * @param filePath     文件保存路径
-         * @return
-         */
-        private inline fun saveFile(responseBody: ResponseBody, url: String, filePath: String, progressListener: (Float) -> Unit): File {
-            var tempFile = FileUtils.getTempFile(url, filePath)
+    /**
+     * 根据ResponseBody 写文件
+     * @param responseBody
+     * @param url
+     * @param filePath     文件保存路径
+     * @return
+     */
+    private inline fun saveFile(responseBody: ResponseBody, url: String, filePath: String, progressListener: (Float) -> Unit): File {
+        var tempFile = FileUtils.getTempFile(url, filePath)
 
-            val reName_MAP = ArrayMap<String, String>()
+        val reName_MAP = ArrayMap<String, String>()
 
 
-            var uri: Uri? = null
-            if (!filePath.contains(AppUtils.getLocalPackageName())) { // 下载到 sd卡 Environment.DIRECTORY_DOWNLOADS 目录
-                UriUtils.deleteFileUri("Downloads",
-                    MediaStore.Downloads.RELATIVE_PATH + "=? AND " + MediaStore.Downloads.DISPLAY_NAME + " =?",
-                    arrayOf(Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), tempFile.name)
-                )
+        var uri: Uri? = null
+        if (!filePath.contains(AppUtils.getLocalPackageName())) { // 下载到 sd卡 Environment.DIRECTORY_DOWNLOADS 目录
+            UriUtils.deleteFileUri("Downloads",
+                MediaStore.Downloads.RELATIVE_PATH + "=? AND " + MediaStore.Downloads.DISPLAY_NAME + " =?",
+                arrayOf(Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath(), tempFile.name)
+            )
 
+            val contentValues = ContentValues()
+            contentValues.put(
+                MediaStore.Downloads.RELATIVE_PATH,
+                Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath()
+            )
+            contentValues.put(MediaStore.Downloads.DISPLAY_NAME, tempFile.name)
+            uri = UriUtils.createFileUri(contentValues, "Downloads")
+        } else {
+            tempFile = FileUtils.fileIsExists(tempFile.path)
+        }
+
+
+        var file: File = writeFileToDisk(responseBody, url, tempFile.absolutePath, uri, progressListener)
+        try {
+            val FileDownStatus = SpfAgent.init("").getInt(url + Constant.FileDownStatus)
+
+            val renameSuccess: Boolean
+            if (FileDownStatus == 4) {
                 val contentValues = ContentValues()
                 contentValues.put(
                     MediaStore.Downloads.RELATIVE_PATH,
                     Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath()
                 )
-                contentValues.put(MediaStore.Downloads.DISPLAY_NAME, tempFile.name)
-                uri = UriUtils.createFileUri(contentValues, "Downloads")
-            } else {
-                tempFile = FileUtils.fileIsExists(tempFile.path)
-            }
 
-
-            var file: File = writeFileToDisk(responseBody, url, tempFile.absolutePath, uri, progressListener)
-            try {
-                val FileDownStatus = SpfAgent.init("").getInt(url + Constant.FileDownStatus)
-
-                val renameSuccess: Boolean
-                if (FileDownStatus == 4) {
-                    val contentValues = ContentValues()
-                    contentValues.put(
-                        MediaStore.Downloads.RELATIVE_PATH,
-                        Environment.DIRECTORY_DOWNLOADS + "/" + ConfigUtils.getFilePath()
-                    )
-
-                    val fileName = FileUtils.getFileName(url)
-                    var resultFile = File(filePath, fileName)
-                    if (reName_MAP.containsKey(url)) {
-                        if (null != uri) {
-                            contentValues.put(
-                                MediaStore.Downloads.DISPLAY_NAME,
-                                reName_MAP[url]
-                            )
-                            contentValues.put(
-                                MediaStore.Downloads.DATA,
-                                filePath + File.separator + reName_MAP[url]
-                            )
-                            renameSuccess = UriUtils.updateFileUri(uri, contentValues)
-                            resultFile = File(filePath, reName_MAP[url])
-                        } else {
-                            resultFile = File(tempFile.parent, reName_MAP[url])
-                            renameSuccess = tempFile.renameTo(resultFile)
-                        }
+                val fileName = FileUtils.getFileName(url)
+                var resultFile = File(filePath, fileName)
+                if (reName_MAP.containsKey(url)) {
+                    if (null != uri) {
+                        contentValues.put(
+                            MediaStore.Downloads.DISPLAY_NAME,
+                            reName_MAP[url]
+                        )
+                        contentValues.put(
+                            MediaStore.Downloads.DATA,
+                            filePath + File.separator + reName_MAP[url]
+                        )
+                        renameSuccess = UriUtils.updateFileUri(uri, contentValues)
+                        resultFile = File(filePath, reName_MAP[url])
                     } else {
-                        if (null != uri) {
-                            contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName)
-                            contentValues.put(
-                                MediaStore.Downloads.DATA,
-                                filePath + File.separator + fileName
-                            )
-                            renameSuccess = UriUtils.updateFileUri(uri, contentValues)
-                        } else {
-                            renameSuccess = FileUtils.reNameFile(url, tempFile.path)
-                        }
+                        resultFile = File(tempFile.parent, reName_MAP[url])
+                        renameSuccess = tempFile.renameTo(resultFile)
                     }
-
-                    return if (renameSuccess) {
-                        resultFile
-                    } else {
-                        tempFile
-                    }
-                } else if (FileDownStatus == 3) { //取消下载则 删除下载内容
-                    FileUtils.deleteFileSafely(tempFile)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-
-            return file
-        }
-
-        /**
-         * 单线程 断点下载
-         *
-         * @param responseBody
-         * @param filePath
-         * @return
-         * @throws IOException
-         */
-        private inline fun writeFileToDisk(responseBody: ResponseBody, url: String, filePath: String?, uri: Uri?, progressListener: (Float) -> Unit): File {
-            val file = File(filePath)
-            val totalByte = responseBody.contentLength()
-            val fileTotalByte = file.length() + totalByte
-
-            SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 1).commit(false) //正在下载
-            val buffer = ByteArray(1024 * 4)
-
-            var `is`: InputStream? = null
-            var randomAccessFile: RandomAccessFile? = null
-            var out: OutputStream? = null
-
-            try {
-                `is` = responseBody.byteStream()
-
-                if (null != uri) {
-                    val resolver = ConfigUtils.getAppCtx().contentResolver
-                    out = resolver.openOutputStream(uri)
                 } else {
-                    val tempFileLen = file.length()
-                    randomAccessFile = RandomAccessFile(file, "rwd")
-                    randomAccessFile.seek(tempFileLen)
-                }
-
-                var downloadByte: Long = 0
-                var lastTotal = 0L
-
-                while (true) {
-                    val len = `is`.read(buffer)
-                    if (len == -1) { //下载完成
-                        SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 4).commit(false) //下载完成
-                        break
-                    }
-
-                    val FileDownStatus = SpfAgent.init("").getInt(url + Constant.FileDownStatus)
-                    if (FileDownStatus == 2 || FileDownStatus == 3) break //暂停或者取消 停止下载
-
-
-                    if (null != randomAccessFile) {
-                        randomAccessFile.write(buffer, 0, len)
+                    if (null != uri) {
+                        contentValues.put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                        contentValues.put(
+                            MediaStore.Downloads.DATA,
+                            filePath + File.separator + fileName
+                        )
+                        renameSuccess = UriUtils.updateFileUri(uri, contentValues)
                     } else {
-                        out?.write(buffer, 0, len)
-                    }
-
-                    downloadByte += len.toLong()
-                    lastTotal += len.toLong()
-
-                    if (lastTotal >= CALL_BACK_LENGTH || downloadByte >= fileTotalByte) { //避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
-                        progressListener((downloadByte * 100 / fileTotalByte).toFloat())
-                        lastTotal = 0
+                        renameSuccess = FileUtils.reNameFile(url, tempFile.path)
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                FileUtils.closeIO(out, `is`, responseBody)
+
+                return if (renameSuccess) {
+                    resultFile
+                } else {
+                    tempFile
+                }
+            } else if (FileDownStatus == 3) { //取消下载则 删除下载内容
+                FileUtils.deleteFileSafely(tempFile)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return file
+    }
+
+    /**
+     * 单线程 断点下载
+     *
+     * @param responseBody
+     * @param filePath
+     * @return
+     * @throws IOException
+     */
+    private inline fun writeFileToDisk(responseBody: ResponseBody, url: String, filePath: String?, uri: Uri?, progressListener: (Float) -> Unit): File {
+        val file = File(filePath)
+        val totalByte = responseBody.contentLength()
+        val fileTotalByte = file.length() + totalByte
+
+        SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 1).commit(false) //正在下载
+        val buffer = ByteArray(1024 * 4)
+
+        var `is`: InputStream? = null
+        var randomAccessFile: RandomAccessFile? = null
+        var out: OutputStream? = null
+
+        try {
+            `is` = responseBody.byteStream()
+
+            if (null != uri) {
+                val resolver = ConfigUtils.getAppCtx().contentResolver
+                out = resolver.openOutputStream(uri)
+            } else {
+                val tempFileLen = file.length()
+                randomAccessFile = RandomAccessFile(file, "rwd")
+                randomAccessFile.seek(tempFileLen)
             }
 
-            return file
+            var downloadByte: Long = 0
+            var lastTotal = 0L
+
+            while (true) {
+                val len = `is`.read(buffer)
+                if (len == -1) { //下载完成
+                    SpfAgent.init("").saveInt(url + Constant.FileDownStatus, 4).commit(false) //下载完成
+                    break
+                }
+
+                val FileDownStatus = SpfAgent.init("").getInt(url + Constant.FileDownStatus)
+                if (FileDownStatus == 2 || FileDownStatus == 3) break //暂停或者取消 停止下载
+
+
+                if (null != randomAccessFile) {
+                    randomAccessFile.write(buffer, 0, len)
+                } else {
+                    out?.write(buffer, 0, len)
+                }
+
+                downloadByte += len.toLong()
+                lastTotal += len.toLong()
+
+                if (lastTotal >= CALL_BACK_LENGTH || downloadByte >= fileTotalByte) { //避免每写4096字节，就回调一次，那未免太奢侈了，所以设定一个常量每1mb回调一次
+                    progressListener((downloadByte * 100 / fileTotalByte).toFloat())
+                    lastTotal = 0
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            FileUtils.closeIO(out, `is`, responseBody)
         }
+
+        return file
+    }
 
 
 }

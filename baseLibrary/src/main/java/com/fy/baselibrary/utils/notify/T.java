@@ -28,7 +28,7 @@ import com.fy.baselibrary.utils.drawable.TintUtils;
 public class T {
 
     private static Toast toast;
-    public static boolean isShowSystem = false; // 是否显示系统 toast
+    public static boolean isShowSystem = true; // 是否显示系统 toast
     public static int gravity = Gravity.BOTTOM;
 
     private T() {}
