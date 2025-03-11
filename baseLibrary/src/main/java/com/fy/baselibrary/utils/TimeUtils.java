@@ -88,6 +88,44 @@ public class TimeUtils {
     }
 
     /**
+     * 根据 calendar 获取本周的开始日期和结束日期 的时间戳
+     * @param isMoudel 周起始模式（Calendar.SUNDAY 以周日为首日; Calendar.MONDAY 以周一为首日）
+     */
+    public static long[] getWeekTimeMillis(Calendar calendar, int isMoudel) {
+        Calendar calendarWeek = Calendar.getInstance();
+        calendarWeek.setTimeInMillis(calendar.getTimeInMillis());
+
+        calendarWeek.add(Calendar.DATE, 0 * 7);   // 0 表示当前周，-1 表示上周，1 表示下周，以此类推
+        calendarWeek.setFirstDayOfWeek(Calendar.SUNDAY); // 以周日为首日
+        // 获取本周的开始日期
+        calendarWeek.set(Calendar.DAY_OF_WEEK, isMoudel);
+        long startOfWeek = calendarWeek.getTimeInMillis();
+
+        // 获取本周的结束日期
+        calendarWeek.set(Calendar.DAY_OF_WEEK, isMoudel == Calendar.SUNDAY ? Calendar.SATURDAY : Calendar.SUNDAY);
+        long endOfWeek = calendarWeek.getTimeInMillis();
+
+        return new long[]{startOfWeek, endOfWeek};
+    }
+
+    /**
+     * 判断选择的日期是否是本周
+     */
+    public static boolean isThisWeek(Calendar date) {
+        Calendar calendar = Calendar.getInstance();
+        int currentWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+
+        calendar.setTimeInMillis(date.getTimeInMillis());
+
+        int paramWeek = calendar.get(Calendar.WEEK_OF_YEAR);
+        if (paramWeek == currentWeek) {
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
      * 指定日期 是否在日期范围內
      * @return
      */
