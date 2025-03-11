@@ -130,6 +130,21 @@ public class TimeUtils {
      * @return
      */
     public static boolean isCalendarInRange(Calendar targetCalendar, Calendar minCalendar, Calendar maxCalendar){
+        targetCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        targetCalendar.set(Calendar.MINUTE, 0);
+        targetCalendar.set(Calendar.SECOND, 0);
+        targetCalendar.set(Calendar.MILLISECOND, 0);
+
+        minCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        minCalendar.set(Calendar.MINUTE, 0);
+        minCalendar.set(Calendar.SECOND, 0);
+        minCalendar.set(Calendar.MILLISECOND, 0);
+
+        maxCalendar.set(Calendar.HOUR_OF_DAY, 0);
+        maxCalendar.set(Calendar.MINUTE, 0);
+        maxCalendar.set(Calendar.SECOND, 0);
+        maxCalendar.set(Calendar.MILLISECOND, 0);
+
         return targetCalendar.getTimeInMillis() >= minCalendar.getTimeInMillis()
                 && targetCalendar.getTimeInMillis() <= maxCalendar.getTimeInMillis();
     }
