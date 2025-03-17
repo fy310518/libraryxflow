@@ -49,13 +49,10 @@ public class TimeUtils {
      * @return
      */
     public static Date string2Date(String timeStr, String format) {
-
-        if(TextUtils.isEmpty(timeStr))return new Date(-1);
+        if(TextUtils.isEmpty(timeStr)) return new Date(-1);
 
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, Locale.CHINA);
-            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+08"));
-
+            SimpleDateFormat simpleDateFormat = getSimpleDateFormat(format);
             return simpleDateFormat.parse(timeStr);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -82,9 +79,21 @@ public class TimeUtils {
      * @return
      */
     public static String Data2String(Date date, String format){
-        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.CHINA);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+        SimpleDateFormat sdf = getSimpleDateFormat(format);
         return sdf.format(date);
+    }
+
+    public static SimpleDateFormat getSimpleDateFormat(String format) {
+        Locale locale = Locale.getDefault();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, locale);
+
+        if(locale == Locale.CHINA){
+            simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+        } else {
+            simpleDateFormat.setTimeZone(TimeZone.getDefault());
+        }
+
+        return simpleDateFormat;
     }
 
     /**
