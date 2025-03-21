@@ -59,7 +59,7 @@ object HttpUtils {
     fun <T> httpGet(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        typeOfT: TypeToken<T>? = null,
+        typeOfT: TypeToken<T>,
         headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
     ): Flow<T> {
         return flow {
@@ -79,7 +79,7 @@ object HttpUtils {
     fun <T> postCompose(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        typeOfT: TypeToken<T>? = null,
+        typeOfT: TypeToken<T>,
         headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
     ): Flow<T> {
         return flow {
@@ -96,7 +96,7 @@ object HttpUtils {
     fun <T> postForm(
         apiUrl: String = "",
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        typeOfT: TypeToken<T>? = null,
+        typeOfT: TypeToken<T>,
         headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
     ): Flow<T> {
         return flow {
@@ -111,16 +111,12 @@ object HttpUtils {
     }
 
 
-    fun <T, I : BaseBean<Any>> Flow<I>.flowConverter(typeOfT: TypeToken<T>? = null): Flow<T> {
+    fun <T, I : BaseBean<Any>> Flow<I>.flowConverter(typeOfT: TypeToken<T>): Flow<T> {
         return map { result ->
             if (result.isSuccess()) {
                 val data = run {
                     val jsonData = GsonUtils.toJson(result.getResultData())
-                    if (typeOfT != null) {
-                        GsonUtils.fromJson(jsonData, typeOfT)
-                    } else {
-                        throw ServerException("Type cannot be empty", result.getResultCode())
-                    }
+                    GsonUtils.fromJson(jsonData, typeOfT)
                 }
 
                 data
