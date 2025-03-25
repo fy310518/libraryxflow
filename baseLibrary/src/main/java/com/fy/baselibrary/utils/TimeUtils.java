@@ -198,7 +198,13 @@ public class TimeUtils {
      */
     public static long initDateByDay(long time){
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+
+        Locale locale = Locale.getDefault();
+        if(locale == Locale.CHINA){
+            calendar.setTimeZone(TimeZone.getTimeZone("GMT+08"));
+        } else {
+            calendar.setTimeZone(TimeZone.getDefault());
+        }
         calendar.setTimeInMillis(time);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);

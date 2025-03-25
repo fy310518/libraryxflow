@@ -2,6 +2,7 @@ package com.fy.baselibrary.utils.config
 
 import android.app.Activity
 import android.graphics.Color
+import android.view.Window
 import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
@@ -35,11 +36,10 @@ class StatusBarUtils {
 
         /**
          * 控制状态栏、导航栏 显示/隐藏
+         * activity.window dialog?.window
          * @param isVisible 是否显示
          */
-        fun setStatusBarVisible(activity: Activity, isVisible: Boolean) {
-            val window = activity.window
-
+        fun setStatusBarVisible(window: Window, isVisible: Boolean) {
             WindowInsetsControllerCompat(window, window.decorView).let { controller ->
                 if (isVisible) {
                     controller.show(WindowInsetsCompat.Type.statusBars())
@@ -56,13 +56,13 @@ class StatusBarUtils {
          *  设置状态栏 背景颜色
          *  这里还是直接操作window的statusBarColor
          */
-        fun setStatusBarColor(activity: Activity, @ColorInt statusBarColor: Int, @ColorInt navigationBarColor: Int) {
-            activity.window.statusBarColor = statusBarColor
-            setStatusBarTextColor(activity, statusBarColor)
+        fun setStatusBarColor(window: Window, @ColorInt statusBarColor: Int, @ColorInt navigationBarColor: Int) {
+            window.statusBarColor = statusBarColor
+            setStatusBarTextColor(window, statusBarColor)
 
-            activity.window.navigationBarColor = navigationBarColor
+            window.navigationBarColor = navigationBarColor
             val luminanceValue = ColorUtils.calculateLuminance(navigationBarColor)
-            WindowInsetsControllerCompat(activity.window, activity.window.decorView).let { controller ->
+            WindowInsetsControllerCompat(window, window.decorView).let { controller ->
                 if (navigationBarColor == Color.TRANSPARENT) {
                     controller.isAppearanceLightNavigationBars = true
                 } else {
@@ -75,13 +75,13 @@ class StatusBarUtils {
          *  沉浸式状态栏
          *  @param contentColor 内容颜色:获取内容的颜色，传入系统，它自动修改字体颜色(黑/白)
          */
-        fun immersiveStatusBar(activity: Activity, @ColorInt contentColor: Int) {
-            val window = activity.window.apply {
+        fun immersiveStatusBar(window: Window, @ColorInt contentColor: Int) {
+            val window = window.apply {
                 statusBarColor = Color.TRANSPARENT
                 navigationBarColor = Color.TRANSPARENT
             }
             // 设置状态栏字体颜色
-            setStatusBarTextColor(activity, contentColor)
+            setStatusBarTextColor(window, contentColor)
             WindowCompat.setDecorFitsSystemWindows(window, false)
 
 //            activity.findViewById<FrameLayout>(android.R.id.content).apply {
@@ -98,10 +98,10 @@ class StatusBarUtils {
          *  此api只能控制字体颜色为 黑/白
          *  @param color 这里的颜色是指背景颜色
          */
-        private fun setStatusBarTextColor(activity: Activity, @ColorInt color: Int) {
+        private fun setStatusBarTextColor(window: Window, @ColorInt color: Int) {
             // 计算颜色亮度
             val luminanceValue = ColorUtils.calculateLuminance(color)
-            WindowInsetsControllerCompat(activity.window, activity.window.decorView).let { controller ->
+            WindowInsetsControllerCompat(window, window.decorView).let { controller ->
                 if (color == Color.TRANSPARENT) {
                     // 如果是透明颜色就默认设置成黑色
                     controller.isAppearanceLightStatusBars = true

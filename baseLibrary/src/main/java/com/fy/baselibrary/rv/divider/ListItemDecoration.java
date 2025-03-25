@@ -53,9 +53,15 @@ public class ListItemDecoration extends RecyclerView.ItemDecoration {
         int itemPosition = parent.getChildAdapterPosition(view);
 
         // 第1个Item不绘制(此处：不设置间隔)分割线
-        if (itemPosition == 0) return;
+        if (itemPosition == 0) {
+            outRect.set(0, 0, 0, 0);
+            return;
+        }
 //        state.getItemCount()-1;           //最后一条的postion
-        if(!builder.isDrawLastItem && itemPosition == state.getItemCount() -1) return;
+        if(!builder.isDrawLastItem && itemPosition == state.getItemCount() -1) {
+            outRect.set(0, 0, 0, 0);
+            return;
+        }
 
         if (builder.orientation == LinearLayoutManager.VERTICAL) {
             outRect.set(0, builder.mSpace, 0, 0);//设置 列表item 四个方向的padding
