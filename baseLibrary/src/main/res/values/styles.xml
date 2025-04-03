@@ -67,16 +67,17 @@
     <!-- dialog 样式 -->
     <style name="commonDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:background">@android:color/transparent</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:windowSoftInputMode">adjustPan</item>
-        <item name="android:windowIsFloating">true</item>
-
-        <!--    dialog 全屏 可以 设置沉浸    -->
-        <item name="android:windowFullscreen">true</item>
 
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimEnabled">true</item>
+
+        <!--    dialog 全屏 可以 设置沉浸    -->
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
     </style>
 
     <!-- activity 切换动画 -->
