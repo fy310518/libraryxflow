@@ -72,28 +72,37 @@ public abstract class BaseFragment<VM extends AndroidViewModel, VDB extends View
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        L.e(TAG, "onCreateView()");
+
         if (null == mRootView) {
-            if (-1 != setContentLayout()){
-                vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), setContentLayout(), container, false);
-                vdb.setLifecycleOwner(getActivity());
-                mRootView = vdb.getRoot();
-
-                vm = AnimUtils.createViewModel(this);
-            }
-
-            initData(vm, vdb, savedInstanceState);
-            if (-1 != setContentLayout()) slManager = LoadSirUtils.initStatusLayout(this);
-
-            isViewCreated = true;
+            initRootView(container, savedInstanceState);
         } else {
             ViewGroup parent = (ViewGroup) mRootView.getParent();
             if (null != parent) {
                 parent.removeView(mRootView);
+
+                mRootView = null;
             }
+
+            initRootView(container, savedInstanceState);
         }
-        L.e(TAG, "onCreateView()");
 
         return mRootView;
+    }
+
+    private void initRootView(ViewGroup container, Bundle savedInstanceState) {
+        if (-1 != setContentLayout()){
+            vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), setContentLayout(), container, false);
+            vdb.setLifecycleOwner(getActivity());
+            mRootView = vdb.getRoot();
+
+            vm = AnimUtils.createViewModel(this);
+        }
+
+        initData(vm, vdb, savedInstanceState);
+        if (-1 != setContentLayout()) slManager = LoadSirUtils.initStatusLayout(this);
+
+        isViewCreated = true;
     }
 
     @Override//当Activity中的onCreate方法执行完后调用

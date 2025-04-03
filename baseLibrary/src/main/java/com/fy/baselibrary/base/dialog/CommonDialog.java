@@ -112,21 +112,29 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (null == mRootView) {
-            vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), layoutId, container, false);
-            vdb.setLifecycleOwner(getActivity());
-            mRootView = vdb.getRoot();
-
-            vm = AnimUtils.createViewModel(this);
-
-            convertView(this);
+            initRootView(container);
         } else {
             ViewGroup parent = (ViewGroup) mRootView.getParent();
             if (null != parent) {
                 parent.removeView(mRootView);
+
+                mRootView = null;
             }
+
+            initRootView(container);
         }
 
         return mRootView;
+    }
+
+    private void initRootView(ViewGroup container) {
+        vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), layoutId, container, false);
+        vdb.setLifecycleOwner(this);
+        mRootView = vdb.getRoot();
+
+        vm = AnimUtils.createViewModel(this);
+
+        convertView(this);
     }
 
     @Override
