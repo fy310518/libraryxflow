@@ -1,6 +1,5 @@
 package com.fy.baselibrary.utils.config
 
-import android.app.Activity
 import android.graphics.Color
 import android.view.Window
 import android.widget.EditText
@@ -22,9 +21,7 @@ class StatusBarUtils {
          * 控制键盘 显示/隐藏
          * @param isVisible 是否显示
          */
-        fun setKeyBoardVisible(activity: Activity, editText: EditText, isVisible: Boolean){
-            val window = activity.window
-
+        fun setKeyBoardVisible(window: Window, editText: EditText, isVisible: Boolean){
             WindowCompat.getInsetsController(window, editText).let { controller ->
                 if(isVisible){
                     controller.show(WindowInsetsCompat.Type.ime())
@@ -53,35 +50,28 @@ class StatusBarUtils {
         }
 
         /**
-         *  设置状态栏 背景颜色
+         *  设置状态栏 & 导航栏 背景颜色
          *  这里还是直接操作window的statusBarColor
          */
         fun setStatusBarColor(window: Window, @ColorInt statusBarColor: Int, @ColorInt navigationBarColor: Int) {
-            window.statusBarColor = statusBarColor
-            setStatusBarTextColor(window, statusBarColor)
+            setStatusBarBgColor(window, statusBarColor)
 
-            window.navigationBarColor = navigationBarColor
-            val luminanceValue = ColorUtils.calculateLuminance(navigationBarColor)
-            WindowInsetsControllerCompat(window, window.decorView).let { controller ->
-                if (navigationBarColor == Color.TRANSPARENT) {
-                    controller.isAppearanceLightNavigationBars = true
-                } else {
-                    controller.isAppearanceLightNavigationBars = luminanceValue >= 0.5
-                }
-            }
+            setNavigationBars(window, navigationBarColor)
         }
 
         /**
          *  沉浸式状态栏
-         *  @param contentColor 内容颜色:获取内容的颜色，传入系统，它自动修改字体颜色(黑/白)
+         *  @param contentColor 设置内容颜色:获取内容的颜色，传入系统，它自动修改字体颜色(黑/白)
          */
         fun immersiveStatusBar(window: Window, @ColorInt contentColor: Int) {
-            val window = window.apply {
-                statusBarColor = Color.TRANSPARENT
-                navigationBarColor = Color.TRANSPARENT
-            }
             // 设置状态栏字体颜色
-            setStatusBarTextColor(window, contentColor)
+            setStatusBarBgColor(window, contentColor)
+            setNavigationBars(window, contentColor)
+
+            // 背景色 设置透明
+            window.statusBarColor = Color.TRANSPARENT
+            window.navigationBarColor = Color.TRANSPARENT
+
             WindowCompat.setDecorFitsSystemWindows(window, false)
 
 //            activity.findViewById<FrameLayout>(android.R.id.content).apply {
@@ -94,11 +84,11 @@ class StatusBarUtils {
         }
 
         /**
-         *  设置状态栏字体颜色
-         *  此api只能控制字体颜色为 黑/白
+         *  设置状态栏背景色 & 字体颜色（字体颜色是根据 背景色计算） 此api只能控制字体颜色为 黑/白
          *  @param color 这里的颜色是指背景颜色
          */
-        private fun setStatusBarTextColor(window: Window, @ColorInt color: Int) {
+        fun setStatusBarBgColor(window: Window, @ColorInt color: Int) {
+            window.statusBarColor = color
             // 计算颜色亮度
             val luminanceValue = ColorUtils.calculateLuminance(color)
             WindowInsetsControllerCompat(window, window.decorView).let { controller ->
@@ -108,6 +98,23 @@ class StatusBarUtils {
                 } else {
                     // 通过亮度来决定字体颜色是黑还是白
                     controller.isAppearanceLightStatusBars = luminanceValue >= 0.5
+                }
+            }
+        }
+
+        /**
+         *  设置导航栏背景色 & 字体颜色（字体颜色是根据 背景色计算） 此api只能控制字体颜色为 黑/白
+         *  @param navigationBarColor 这里的颜色是指背景颜色
+         */
+        fun setNavigationBars(window: Window, @ColorInt navigationBarColor: Int) {
+            window.navigationBarColor = navigationBarColor
+
+            val luminanceValue = ColorUtils.calculateLuminance(navigationBarColor)
+            WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+                if (navigationBarColor == Color.TRANSPARENT) {
+                    controller.isAppearanceLightNavigationBars = true
+                } else {
+                    controller.isAppearanceLightNavigationBars = luminanceValue >= 0.5
                 }
             }
         }

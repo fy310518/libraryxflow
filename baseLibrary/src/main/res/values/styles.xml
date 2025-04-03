@@ -72,6 +72,9 @@
         <item name="android:windowSoftInputMode">adjustPan</item>
         <item name="android:windowIsFloating">true</item>
 
+        <!--    dialog 全屏 可以 设置沉浸    -->
+        <item name="android:windowFullscreen">true</item>
+
         <item name="android:windowFrame">@null</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
