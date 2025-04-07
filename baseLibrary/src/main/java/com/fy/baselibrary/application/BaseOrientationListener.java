@@ -16,6 +16,12 @@ public class BaseOrientationListener extends OrientationEventListener {
 //     android:configChanges="uiMode" 监听深色主题是否开启
 //     Application(很少用) activity 或者 fragment 重写 onConfigurationChanged() 以【监听屏幕旋转 或者 监听到暗黑的主题是否开启】 如下：
 
+//        application onCreate()，onConfigurationChanged() 调用 ScreenUtils.screenAdapter()
+//        activity onConfigurationChanged() 设置 重新加载布局
+//        fragment onConfigurationChanged() 设置 重新加载布局(fragment 执行 detach  attach 即可)
+//          parentFragmentManager.beginTransaction().detach(this).commitNow()
+//          parentFragmentManager.beginTransaction().attach(this).commitNow()
+
 //    @Override
 //    public void onConfigurationChanged(Configuration newConfig) {
 //        super.onConfigurationChanged(newConfig);

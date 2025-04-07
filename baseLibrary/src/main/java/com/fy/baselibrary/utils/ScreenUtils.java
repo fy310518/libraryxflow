@@ -204,8 +204,8 @@ public class ScreenUtils {
     public static void screenAdapter(Context context){
         boolean isPortrait = context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
 
-        int designWidth = (int) ResUtils.getMetaData(context, "rudeness_Adapter_Screen_portrait", 0);
-        int landscape = (int) ResUtils.getMetaData(context, "rudeness_Adapter_Screen_landscape", 0);
+        int designWidth = (int) ResUtils.getMetaData(context, "rudeness_Adapter_Screen_portrait", 360);
+        int landscape = (int) ResUtils.getMetaData(context, "rudeness_Adapter_Screen_landscape", 540);
 
         ScreenUtils.setCustomDensity(context, isPortrait ? designWidth : landscape);
     }
