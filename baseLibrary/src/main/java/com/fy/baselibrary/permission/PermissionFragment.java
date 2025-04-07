@@ -94,6 +94,11 @@ public class PermissionFragment extends BaseFragment<BaseViewModel, ViewDataBind
     }
 
     @Override
+    public int executeBefore() {
+        return setContentLayout();
+    }
+
+    @Override
     public void initData(@Nullable BaseViewModel viewModel, @Nullable ViewDataBinding dataBinding, @Nullable Bundle savedInstanceState) {
         appName = AppUtils.getAppName(getContext(), AppUtils.getLocalPackageName());
 
