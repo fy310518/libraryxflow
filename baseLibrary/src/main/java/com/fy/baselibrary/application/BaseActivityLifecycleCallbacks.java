@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LifecycleOwner;
 
+import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.base.fragment.FragmentChangeManager;
 import com.fy.baselibrary.utils.AnimUtils;
@@ -39,7 +40,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     public static final String TAG = "lifeCycle --> ";
     public static int actNum;
 
-    private ArrayMap<String, BaseOrientoinListener> orientationListenerMap = new ArrayMap<>();
+    private ArrayMap<String, BaseOrientationListener> orientationListenerMap = new ArrayMap<>();
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
@@ -61,26 +62,26 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         if (activity instanceof IBaseMVVM) {
             act = (IBaseMVVM) activity;
 
-            vdb = DataBindingUtil.setContentView(activity, act.setContentLayout());
+            vdb = DataBindingUtil.setContentView(activity, act.executeBefore());
             if (activity instanceof LifecycleOwner) vdb.setLifecycleOwner((LifecycleOwner) activity);
             bvm = AnimUtils.createViewModel(activity);
-
-//            注册屏幕旋转监听
-            if (Constant.isOrientation) {
-                BaseOrientoinListener orientoinListener = new BaseOrientoinListener(activity);
-                boolean autoRotateOn = (Settings.System.getInt(activity.getContentResolver(),
-                        Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
-
-                //检查系统是否开启自动旋转
-                if (autoRotateOn) orientoinListener.enable();
-                orientationListenerMap.put(activity.getClass().getSimpleName() + "-" + activity.getTaskId(), orientoinListener);
-            }
 
             //设置 activity 多状态布局
 //            if (activity instanceof OnSetStatusView) {
 //                StatusLayoutManager slManager = LoadSirUtils.initStatusLayout(activity);
 //                activityBean.setSlManager(slManager);
 //            }
+        }
+
+//            注册屏幕旋转监听
+        if (ConfigUtils.isOrientation()) {
+            BaseOrientationListener orientationListener = new BaseOrientationListener(activity);
+            boolean autoRotateOn = (Settings.System.getInt(activity.getContentResolver(),
+                    Settings.System.ACCELEROMETER_ROTATION, 0) == 1);
+
+            //检查系统是否开启自动旋转
+            if (autoRotateOn) orientationListener.enable();
+            orientationListenerMap.put(activity.getClass().getSimpleName() + "-" + activity.getTaskId(), orientationListener);
         }
 
         if(null != savedInstanceState && activity instanceof FragmentActivity) {
@@ -126,7 +127,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
         L.e(TAG + activity.getClass().getSimpleName(), "--Destroy()");
 
         //销毁 屏幕旋转监听
-        BaseOrientoinListener orientationListener = orientationListenerMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
+        BaseOrientationListener orientationListener = orientationListenerMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());
         if (null != orientationListener){
             orientationListener.disable();
             orientationListenerMap.remove(activity.getClass().getSimpleName() + "-" + activity.getTaskId());

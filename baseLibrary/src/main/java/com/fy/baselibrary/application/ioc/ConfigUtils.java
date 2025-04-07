@@ -67,6 +67,10 @@ public class ConfigUtils {
         return ConfigUtils.getInstance().builder.isFontDefault;
     }
 
+    public static boolean isOrientation() {
+        return ConfigUtils.getInstance().builder.isOrientation;
+    }
+
     public static boolean isEnableCacheInterceptor() {
         return ConfigUtils.getInstance().builder.isEnableCacheInterceptor;
     }
@@ -127,6 +131,8 @@ public class ConfigUtils {
         boolean DEBUG;
         /** 是否  跟随系统字体大小 默认跟随*/
         boolean isFontDefault = true;
+        /** 注册屏幕旋转监听 */
+        boolean isOrientation = false;
 
         /** 应用 文件根目录 名称（文件夹） */
         String filePath = "";
@@ -182,6 +188,11 @@ public class ConfigUtils {
 
         public ConfigBuilder setFontDefault(boolean fontDefault) {
             isFontDefault = fontDefault;
+            return this;
+        }
+
+        public ConfigBuilder setOrientation(boolean orientation) {
+            isOrientation = orientation;
             return this;
         }
 

@@ -25,11 +25,6 @@ public class Constant {
 
 
     /**
-     * 程序是否需要横竖屏切换
-     */
-    public static boolean isOrientation = false;
-
-    /**
      * 吸附 ViewType
      */
     public static final int StickyType = 58;
