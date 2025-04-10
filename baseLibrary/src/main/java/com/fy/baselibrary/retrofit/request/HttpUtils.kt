@@ -47,18 +47,15 @@ object HttpUtils {
         GET, POST, POSTJSON
     }
 
-    class Builder<T> private constructor(){
+    class Builder private constructor(){
         var requestMethod: Method = Method.POSTJSON
         var apiUrl: String = ""
         var params: ArrayMap<String, Any> = ArrayMap<String, Any>()
-        var typeOfT: TypeToken<T> = object: TypeToken<T>(){}
         var headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
         var offline: HttpOffline? = null
 
-        fun build(typeOfT: TypeToken<T>): Builder<T>{
-            return Builder<T>().apply {
-                this.typeOfT = typeOfT
-            }
+        fun build(): Builder{
+            return Builder()
         }
 
         fun setUrl(apiUrl: String, requestMethod: Method = Method.POSTJSON) = apply {
@@ -89,7 +86,7 @@ object HttpUtils {
             }
         }
 
-        fun getNetFlow(): Flow<T> {
+        fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T> {
             return if(null == offline){
                 getNetFlow(typeOfT)
             } else {
