@@ -61,19 +61,13 @@ object HttpUtils {
             }
         }
 
-        fun setApiUrl(apiUrl: String) = apply {
+        fun setUrl(apiUrl: String, requestMethod: Method = Method.POSTJSON) = apply {
             this.apiUrl = apiUrl
-        }
-
-        fun setMethod(requestMethod: Method) = apply {
             this.requestMethod = requestMethod
         }
 
-        fun setParams(params: ArrayMap<String, Any>) = apply {
+        fun setParams(params: ArrayMap<String, Any>, headers: ArrayMap<String, Any> = ArrayMap<String, Any>()) = apply {
             this.params = params
-        }
-
-        fun setHeaders(headers: ArrayMap<String, Any>) = apply {
             this.headers = headers
         }
 
