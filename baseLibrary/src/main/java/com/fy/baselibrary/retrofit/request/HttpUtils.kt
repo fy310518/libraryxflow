@@ -13,6 +13,9 @@ import com.fy.baselibrary.retrofit.load.ApiService
 import com.fy.baselibrary.retrofit.observer.BaseBean
 import com.fy.baselibrary.retrofit.observer.IProgressDialog
 import com.fy.baselibrary.retrofit.observer.TransmissionState
+import com.fy.baselibrary.retrofit.request.HttpUtils.httpGet
+import com.fy.baselibrary.retrofit.request.HttpUtils.postCompose
+import com.fy.baselibrary.retrofit.request.HttpUtils.postForm
 import com.fy.baselibrary.utils.AppUtils
 import com.fy.baselibrary.utils.Constant
 import com.fy.baselibrary.utils.FileUtils
@@ -39,75 +42,73 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.io.RandomAccessFile
 
+enum class Method{
+    GET, POST, POSTJSON
+}
+
+class Builder{
+    var requestMethod: Method = Method.POSTJSON
+    var apiUrl: String = ""
+    var params: ArrayMap<String, Any> = ArrayMap<String, Any>()
+    var headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
+    var offline: HttpOffline? = null
+
+    fun setParams(params: ArrayMap<String, Any>, headers: ArrayMap<String, Any> = ArrayMap<String, Any>()) = apply {
+        this.params = params
+        this.headers = headers
+    }
+
+    fun setOfflineListener(offline: HttpOffline) = apply {
+        this.offline = offline
+    }
+
+    private fun <T> getNetFlow(typeOfT: TypeToken<T>): Flow<T> {
+        return when (requestMethod) {
+            Method.GET -> {
+                httpGet(apiUrl, params, typeOfT, headers)
+            }
+            Method.POST -> {
+                postForm(apiUrl, params, typeOfT, headers)
+            }
+            else -> {
+                postCompose(apiUrl, params, typeOfT, headers)
+            }
+        }
+    }
+
+    fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T> {
+        return if(null == offline){
+            getNetFlow(typeOfT)
+        } else {
+            if (NetUtils.isConnected()) {
+                getNetFlow(typeOfT)
+                    .map { result ->
+                        // 请求成功，缓存到数据库
+                        offline?.saveDataToDb(result)
+
+                        result
+                    }.flowOn(Dispatchers.IO)
+            } else {
+                flow {
+                    val dbData = offline?.queryAllData(typeOfT, params) ?: throw ServerException("", 999)
+                    emit(dbData)
+                }
+            }
+        }
+    }
+}
+
+
 object HttpUtils {
 
     val CALL_BACK_LENGTH: Long = (1024 * 1024).toLong()
 
-    enum class Method{
-        GET, POST, POSTJSON
+    fun build(apiUrl: String, requestMethod: Method = Method.POSTJSON): Builder{
+        return Builder().apply {
+            this.apiUrl = apiUrl
+            this.requestMethod = requestMethod
+        }
     }
-
-    class Builder private constructor(){
-        var requestMethod: Method = Method.POSTJSON
-        var apiUrl: String = ""
-        var params: ArrayMap<String, Any> = ArrayMap<String, Any>()
-        var headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
-        var offline: HttpOffline? = null
-
-        fun build(apiUrl: String, requestMethod: Method = Method.POSTJSON): Builder{
-            return Builder().apply {
-                this.apiUrl = apiUrl
-                this.requestMethod = requestMethod
-            }
-        }
-
-        fun setParams(params: ArrayMap<String, Any>, headers: ArrayMap<String, Any> = ArrayMap<String, Any>()) = apply {
-            this.params = params
-            this.headers = headers
-        }
-
-        fun setOfflineListener(offline: HttpOffline) = apply {
-            this.offline = offline
-        }
-
-        private fun <T> getNetFlow(typeOfT: TypeToken<T>): Flow<T> {
-            return when (requestMethod) {
-                Method.GET -> {
-                    httpGet(apiUrl, params, typeOfT, headers)
-                }
-                Method.POST -> {
-                    postForm(apiUrl, params, typeOfT, headers)
-                }
-                else -> {
-                    postCompose(apiUrl, params, typeOfT, headers)
-                }
-            }
-        }
-
-        fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T> {
-            return if(null == offline){
-                getNetFlow(typeOfT)
-            } else {
-                if (NetUtils.isConnected()) {
-                    getNetFlow(typeOfT)
-                        .map { result ->
-                            // 请求成功，缓存到数据库
-                            offline?.saveDataToDb(result)
-
-                            result
-                        }.flowOn(Dispatchers.IO)
-                } else {
-                    flow {
-                        val dbData = offline?.queryAllData(typeOfT, params) ?: throw ServerException("", 999)
-                        emit(dbData)
-                    }
-                }
-            }
-        }
-
-    }
-
-
 
     /**
      * 获取get 请求 被观察者，最终返回 Flow
