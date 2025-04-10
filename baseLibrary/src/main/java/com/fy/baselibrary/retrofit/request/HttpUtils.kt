@@ -54,13 +54,11 @@ object HttpUtils {
         var headers: ArrayMap<String, Any> = ArrayMap<String, Any>()
         var offline: HttpOffline? = null
 
-        fun build(): Builder{
-            return Builder()
-        }
-
-        fun setUrl(apiUrl: String, requestMethod: Method = Method.POSTJSON) = apply {
-            this.apiUrl = apiUrl
-            this.requestMethod = requestMethod
+        fun build(apiUrl: String, requestMethod: Method = Method.POSTJSON): Builder{
+            return Builder().apply {
+                this.apiUrl = apiUrl
+                this.requestMethod = requestMethod
+            }
         }
 
         fun setParams(params: ArrayMap<String, Any>, headers: ArrayMap<String, Any> = ArrayMap<String, Any>()) = apply {
