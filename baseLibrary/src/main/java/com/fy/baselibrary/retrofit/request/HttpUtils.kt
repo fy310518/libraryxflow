@@ -76,7 +76,7 @@ class Builder{
         }
     }
 
-    fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T?> {
+    fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T> {
         return if(null == offline){
             getNetFlow(typeOfT)
         } else {
@@ -90,8 +90,14 @@ class Builder{
                     }.flowOn(Dispatchers.IO)
             } else {
                 flow {
-                    val dbData: T? = offline?.queryAllData(typeOfT, params)
-                    emit(dbData)
+                    val resultData = offline?.queryAllData(typeOfT, params)
+                        ?: if (typeOfT.rawType is List<*>) {
+                            GsonUtils.fromJson("[]", typeOfT)
+                        } else {
+                            GsonUtils.fromJson("{}", typeOfT)
+                        }
+
+                    emit(resultData)
                 }.flowOn(Dispatchers.IO)
             }
         }
