@@ -13,7 +13,7 @@ interface HttpOffline {
      * @param typeOfT  返回类型
      * @param params   查询参数
      */
-    suspend fun <T> queryAllData(typeOfT: TypeToken<T>, params: ArrayMap<String, Any> = ArrayMap<String, Any>()): T
+    suspend fun <T> queryAllData(typeOfT: TypeToken<T>, params: ArrayMap<String, Any> = ArrayMap<String, Any>()): T?
 
     /**
      * 保存网络数据到数据库

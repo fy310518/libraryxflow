@@ -76,7 +76,7 @@ class Builder{
         }
     }
 
-    fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T> {
+    fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T?> {
         return if(null == offline){
             getNetFlow(typeOfT)
         } else {
@@ -90,9 +90,9 @@ class Builder{
                     }.flowOn(Dispatchers.IO)
             } else {
                 flow {
-                    val dbData = offline?.queryAllData(typeOfT, params) ?: throw ServerException("", 999)
+                    val dbData: T? = offline?.queryAllData(typeOfT, params)
                     emit(dbData)
-                }
+                }.flowOn(Dispatchers.IO)
             }
         }
     }
