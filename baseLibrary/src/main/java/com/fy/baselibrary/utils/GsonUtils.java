@@ -15,6 +15,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,15 @@ public class GsonUtils {
     private GsonUtils() {
         /* cannot be instantiated */
         throw new UnsupportedOperationException("cannot be instantiated");
+    }
+
+    // 判断 Type 泛型 是否是List类型
+    public static boolean isListType(Type type) {
+        if (type instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) type).getRawType();
+            return rawType == List.class || rawType == ArrayList.class;
+        }
+        return false;
     }
 
     /**

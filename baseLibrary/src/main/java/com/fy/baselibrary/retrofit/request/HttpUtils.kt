@@ -91,7 +91,7 @@ class Builder{
             } else {
                 flow {
                     val resultData = offline?.queryAllData(typeOfT, params)
-                        ?: if (typeOfT.rawType is List<*>) {
+                        ?: if (GsonUtils.isListType(typeOfT.type)) {
                             GsonUtils.fromJson("[]", typeOfT)
                         } else {
                             GsonUtils.fromJson("{}", typeOfT)
