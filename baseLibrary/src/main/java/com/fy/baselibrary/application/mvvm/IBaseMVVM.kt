@@ -13,6 +13,10 @@ import com.fy.baselibrary.utils.ScreenUtils
  * Created by fangs on 2022/7/4 16:58.
  */
 interface IBaseMVVM<VM : AndroidViewModel, VDB : ViewDataBinding> {
+
+    var viewModel: VM
+    var vdb: VDB
+
     /**
      * 设置 activity 布局 ID
      */
@@ -34,5 +38,8 @@ interface IBaseMVVM<VM : AndroidViewModel, VDB : ViewDataBinding> {
      * 初始化
      * 注：在 activity 声明 binding: VDB 和 viewModel: VM 变量，并用 viewModel dataBinding 赋值
      */
-    fun initData(viewModel: VM, dataBinding: VDB, savedInstanceState: Bundle?)
+    fun initData(viewModel: VM, dataBinding: VDB, savedInstanceState: Bundle?){
+        this.vdb = dataBinding
+        this.viewModel = viewModel
+    }
 }
