@@ -132,7 +132,9 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         vdb.setLifecycleOwner(this);
         mRootView = vdb.getRoot();
 
-        vm = AnimUtils.createViewModel(this);
+        if(null == vm) {
+            vm = AnimUtils.createViewModel(this);
+        }
 
         convertView(this);
     }

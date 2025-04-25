@@ -95,7 +95,9 @@ public abstract class BaseFragment<VM extends AndroidViewModel, VDB extends View
             vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), setContentLayout(), container, false);
             vdb.setLifecycleOwner(getActivity());
             mRootView = vdb.getRoot();
+        }
 
+        if (null == vm) {
             vm = AnimUtils.createViewModel(this);
         }
 
