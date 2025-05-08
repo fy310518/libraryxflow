@@ -15,6 +15,8 @@ import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.NonNull
+import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.fy.baselibrary.aop.clickfilter.ClickUtils
@@ -53,6 +55,29 @@ fun Bundle.result(activity: Activity) {
     intent.putExtras(this)
     activity.setResult(Activity.RESULT_OK, intent)
     activity.finish()
+}
+
+/**
+ * 适配 8.0以上系统  不再允许后台service直接通过startService方式去启动，
+ *
+ * manifest 添加 权限：<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+ * 在 service 的 onStartCommand 中调用 startForeground() 启动前台服务
+ * @param actClass
+ * @param bundle
+ */
+fun Context.startService(@NonNull actClass: Class<*>, bundle: Bundle? = null){
+    val intent = Intent(this, actClass)
+    if (null != bundle) {
+        intent.putExtras(bundle)
+    }
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if(!AppUtils.isBackground(this)){
+            startForegroundService(intent)
+        }
+    } else {
+        startService(intent)
+    }
 }
 
 /**

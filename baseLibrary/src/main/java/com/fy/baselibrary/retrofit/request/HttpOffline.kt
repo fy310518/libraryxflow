@@ -9,7 +9,7 @@ import com.google.gson.reflect.TypeToken
 interface HttpOffline {
 
     /**
-     * 重数据库查询所有数据
+     * 从数据库查询所有数据
      * @param typeOfT  返回类型
      * @param params   查询参数
      */
