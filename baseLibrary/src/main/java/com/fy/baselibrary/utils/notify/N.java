@@ -45,8 +45,6 @@ public class N {
 
     /** defaults == -100 使用自定义的 铃声和震动*/
     public static final int DEFAULT_CUSTOM = -100;
-    /** 通知 PendingIntent 请求码*/
-    public static final int requestCode = 235;
 
     /** app 声音 是否打开 */
     public static final String voiceKEY = "appVoiceKEY";
@@ -295,8 +293,8 @@ public class N {
          *             if (null != bundle)intent.putExtras(bundle); 】
          * flags  PendingIntent.FLAG_UPDATE_CURRENT
          */
-        public NotifyBuild setPendingIntent(Context context, Intent intent, int flags) {
-            this.pendingIntent = PendingIntent.getActivity(context, N.requestCode, intent, flags);
+        public NotifyBuild setPendingIntent(Context context, int requestCode, Intent intent, int flags) {
+            this.pendingIntent = PendingIntent.getActivity(context, requestCode, intent, flags);
             return this;
         }
 
@@ -304,8 +302,8 @@ public class N {
          * 设置 通知点击 跳转事件
          * @param intents
          */
-        public NotifyBuild setPendingIntent(Context context, @NonNull Intent[] intents, int flags) {
-            this.pendingIntent = PendingIntent.getActivities(context, N.requestCode, intents, flags);
+        public NotifyBuild setPendingIntent(Context context, int requestCode,  @NonNull Intent[] intents, int flags) {
+            this.pendingIntent = PendingIntent.getActivities(context, requestCode, intents, flags);
             return this;
         }
     }
