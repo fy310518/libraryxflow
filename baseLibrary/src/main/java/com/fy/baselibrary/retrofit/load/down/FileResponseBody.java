@@ -69,7 +69,13 @@ public class FileResponseBody extends ResponseBody {
 
         @Override
         public long read(Buffer sink, long byteCount) throws IOException {
-            long bytesRead = super.read(sink, byteCount);
+            long bytesRead = 0;
+            try {
+                bytesRead = super.read(sink, byteCount);
+            } catch (IOException e) {
+                e.printStackTrace();
+                bytesRead = -1;
+            }
 
             if (bytesRead == -1) {
                 totalBytesRead = fullLength;
