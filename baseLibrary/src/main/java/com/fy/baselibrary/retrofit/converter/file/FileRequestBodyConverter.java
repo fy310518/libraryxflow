@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.util.ArrayMap;
 
 import com.fy.baselibrary.retrofit.load.up.ProgressRequestBody;
+import com.fy.baselibrary.utils.GsonUtils;
 import com.fy.baselibrary.utils.security.EncodeUtils;
 
 import java.io.File;
@@ -32,6 +33,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
 //        params.put("uploadFile", "fileName");
 //        params.put("isFileKeyAES", true);//是否使用 fileKey1，fileKey2
 //        params.put("filePathList", files);
+//        params.put("isTextParamJson", files);
 //        params.put("ProgressChannel", new LoadOnSubscribe());
     @Override
     public RequestBody convert(ArrayMap<String, Object> params) throws IOException {
@@ -59,23 +61,30 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
      */
     public synchronized <T> MultipartBody filesToMultipartBody(List<T> files, String fileKey, ArrayMap<String, Object> params) {
         boolean isFileKeyAES = (boolean) params.get("isFileKeyAES");
-
-        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
-
-        //解析 文本参数 装载到 MultipartBody 中
-        for (String key : params.keySet()) {
-            if (!TextUtils.isEmpty(key)
-                    && !key.equals("ProgressChannel")
-                    && !key.equals("uploadFile")
-                    && !key.equals("isFileKeyAES")
-                    && !key.equals("filePathList")
-                    && !key.equals("files")){
-                builder.addFormDataPart(key, params.get(key) + "");
-            }
-        }
-
+        boolean isTextParamJson = (boolean) params.get("isTextParamJson");
         //进度发射器
         Channel<Float> channel = (Channel<Float>) params.get("ProgressChannel");
+
+        params.remove("ProgressChannel");
+        params.remove("uploadFile");
+        params.remove("isFileKeyAES");
+        params.remove("isTextParamJson");
+        params.remove("filePathList");
+        params.remove("files");
+
+        MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
+        //解析 文本参数 装载到 MultipartBody 中
+        if(isTextParamJson){ // 提交 JSON 数据
+            String jsonData = GsonUtils.mapToJsonStr(params);
+            RequestBody jsonBody = RequestBody.create(jsonData, MediaType.get("application/json"));
+            builder.addPart(jsonBody);
+        } else {
+            for (String key : params.keySet()) {
+                if (!TextUtils.isEmpty(key)){
+                    builder.addFormDataPart(key, params.get(key) + "");
+                }
+            }
+        }
 
         long sumLeng = 0L;
         File file;

@@ -249,7 +249,7 @@ object HttpUtils {
             params["uploadFile"] = "files"
             params["isFileKeyAES"] = false
             val data = RequestUtils.create(ApiService::class.java)
-                .uploadFile(apiUrl, formData, headers, params)
+                .uploadFile(apiUrl, formData)
 
 //            for (proress in channel) {
 //                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
