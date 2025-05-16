@@ -5,6 +5,7 @@ import com.fy.baselibrary.retrofit.load.down.DownLoadFileType
 import com.fy.baselibrary.retrofit.load.up.UpLoadFileType
 import com.fy.baselibrary.retrofit.request.BeanModule
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.FieldMap
@@ -90,6 +91,5 @@ interface ApiService {
     @Headers(value = ["CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"])
     @PUT
     suspend fun putUploadFile(@Url apiUrl: String,
-                              @Part files : ArrayList<MultipartBody.Part>,
-                              @Part txtParams: ArrayList<MultipartBody.Part>?): BeanModule<Any>
+                              @Part files : ArrayList<RequestBody>): BeanModule<Any>
 }

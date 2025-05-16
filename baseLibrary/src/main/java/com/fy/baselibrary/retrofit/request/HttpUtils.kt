@@ -234,7 +234,7 @@ object HttpUtils {
      * params.put("uploadFile", "file"); //上传文件 key 值【一般是 "file" OR "files" 根据接口】
      * params["isFileKeyAES"] = false        //多文件上传时候的 文件key：是否使用 file1，file2
      * params["isTextParamJson"] = false     //是否使用 json 格式 传递文本参数
-     * params["contentType"] = ""            //请求类型：application/octet-stream  multipart/form-data
+     * params["isFormSubmit"] = false           //是否表单提交
      */
     fun <T, F> uploadFile(
         apiUrl: String, files: ArrayList<F>,
@@ -260,13 +260,13 @@ object HttpUtils {
 
 //            params["ProgressChannel"] = channel
 
-            val data = if(params["contentType"] == null || params["contentType"] == ""){
+            val data = if(params["isFormSubmit"] == true){
                 RequestUtils.create(ApiService::class.java)
                     .uploadFile(apiUrl, params)
             } else {
-                val filesPart = FileRequestBodyConverter.filesToMultipartBodyPart(files)
+                val filesPart = FileRequestBodyConverter.filesToBody(files)
                 RequestUtils.create(ApiService::class.java)
-                    .putUploadFile(apiUrl, filesPart, null)
+                    .putUploadFile(apiUrl, filesPart)
             }
 
 //            for (proress in channel) {

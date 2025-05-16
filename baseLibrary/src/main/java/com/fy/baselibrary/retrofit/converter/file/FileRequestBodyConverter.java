@@ -140,4 +140,21 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
 
         return parts;
     }
+
+    public static <T> ArrayList<RequestBody> filesToBody(ArrayList<T> files) {
+        ArrayList<RequestBody> data = new ArrayList<RequestBody>();
+
+        for (T t : files) {//访问手机端的文件资源，保证手机端sdcdrd中必须有这个文件
+
+            File file;
+            if (t instanceof File) file = (File) t;
+            else if (t instanceof String)
+                file = new File((String) t);//访问手机端的文件资源，保证手机端sdcdrd中必须有这个文件
+            else break;
+
+            data.add(new ProgressRequestBody(file, "application/octet-stream", null));
+        }
+
+        return data;
+    }
 }
