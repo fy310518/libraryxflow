@@ -63,7 +63,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
         boolean isTextParamJson = (boolean) params.get("isTextParamJson");
         String contentType = (String) params.get("contentType");
         //进度发射器
-        Channel<Float> channel = (Channel<Float>) params.get("ProgressChannel");
+//        Channel<Float> channel = (Channel<Float>) params.get("ProgressChannel");
 
         params.remove("ProgressChannel");
         params.remove("uploadFile");
@@ -100,7 +100,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
             if(TextUtils.isEmpty(contentType)){
                 contentType = "multipart/form-data";
             }
-            ProgressRequestBody requestBody = new ProgressRequestBody(file, contentType, channel);
+            ProgressRequestBody requestBody = new ProgressRequestBody(file, contentType, null);
             if (files.size() > 1) {
                 builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, EncodeUtils.urlEncode(file.getName()), requestBody);
             } else {
