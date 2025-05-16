@@ -70,7 +70,7 @@ public final class RequestModule {
                 .retryOnConnectionFailure(true)//错误重连
 //                .addInterceptor(new RequestHeaderInterceptor())
                 .addInterceptor(new TimeoutInterceptor())
-                .addInterceptor(new FileDownInterceptor())
+//                .addInterceptor(new FileDownInterceptor())
 //                .addInterceptor(new CacheCookiesInterceptor())
 //                .addNetworkInterceptor(new AddCookiesInterceptor())
                 .hostnameVerifier((hostname, session) -> {
