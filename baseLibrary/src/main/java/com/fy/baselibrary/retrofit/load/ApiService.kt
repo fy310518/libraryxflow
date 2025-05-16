@@ -62,7 +62,6 @@ interface ApiService {
      * params.put("filePathList", files);
      *
      * 文本参数 支持 表单提交 & json, (参数需要 json 添加 params.put("isTextParamJson", true);)
-     * params.put("isTextParamJson", true);
      * 注意：其它 文本参数 value 必须是 字符串类型（如下 token 参数）
      * params.put("token", "123");
      */

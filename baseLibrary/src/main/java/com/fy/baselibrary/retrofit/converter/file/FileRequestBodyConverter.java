@@ -31,10 +31,9 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
 //        此方法参数 对应 应用层 执行上传文件前的 请求参数配置 请严格 一一对应
 //        ArrayMap<String, Object> params = new ArrayMap<>();
 //        params.put("uploadFile", "fileName");
-//        params.put("isFileKeyAES", true);//是否使用 fileKey1，fileKey2
-//        params.put("filePathList", files);
-//        params.put("isTextParamJson", files);
-//        params.put("ProgressChannel", new LoadOnSubscribe());
+//        params["isFileKeyAES"] = false        //是否使用 fileKey1，fileKey2
+//        params["isTextParamJson"] = false      //是否使用 json 格式 传递文本参数
+
     @Override
     public RequestBody convert(ArrayMap<String, Object> params) throws IOException {
 
@@ -102,7 +101,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
             }
             ProgressRequestBody requestBody = new ProgressRequestBody(file, contentType, channel);
             if (files.size() > 1) {
-                builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, file.getName(), requestBody);
+                builder.addFormDataPart(isFileKeyAES ? fileKey + (i + 1) : fileKey, EncodeUtils.urlEncode(file.getName()), requestBody);
             } else {
                 String name = fileKey.equals("fileName") ? fileKey + 1 : fileKey;
                 builder.addFormDataPart(name, EncodeUtils.urlEncode(file.getName()), requestBody);

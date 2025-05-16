@@ -221,6 +221,19 @@ object HttpUtils {
     }
 
 
+    /**
+     * 上传文件
+     * @param apiUrl 请求Url
+     * @param files 文件
+     * @param params 请求文本参数
+     * @param typeOfT 响应数据对象
+     * @param progressCallback 进度回调
+     *
+     * 文本参数 应用层 执行上传文件前的 请求参数配置 请严格 一一对应
+     * params.put("uploadFile", "file"); //上传文件 key 值【一般是 "file" OR "files" 根据接口】
+     * params["isFileKeyAES"] = false        //多文件上传时候的 文件key：是否使用 file1，file2
+     * params["isTextParamJson"] = false     //是否使用 json 格式 传递文本参数
+     */
     fun <T, F> uploadFile(
         apiUrl: String, files: ArrayList<F>,
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
@@ -244,8 +257,6 @@ object HttpUtils {
             else throw Exception("param exception")
 
             params["ProgressChannel"] = channel
-            params["uploadFile"] = "files"
-            params["isFileKeyAES"] = false
             val data = RequestUtils.create(ApiService::class.java)
                 .uploadFile(apiUrl, params)
 
