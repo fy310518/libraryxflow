@@ -221,8 +221,8 @@ object HttpUtils {
     }
 
 
-    fun <T> uploadFile(
-        apiUrl: String, files: ArrayList<Any>,
+    fun <T, F> uploadFile(
+        apiUrl: String, files: ArrayList<F>,
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>,
         progressCallback: ((Float) -> Unit)? = null
