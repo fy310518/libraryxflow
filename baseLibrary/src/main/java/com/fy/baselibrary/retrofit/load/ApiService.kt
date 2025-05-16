@@ -68,7 +68,9 @@ interface ApiService {
     @Headers(value = ["CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"])
     @POST
     suspend fun uploadFile(@Url apiUrl: String,
-                           @Body params: ArrayMap<String, Any>): BeanModule<Any>
+                           @Body formData: ArrayMap<String, Any>,
+                           @HeaderMap heads: ArrayMap<String, Any>,
+                           @FieldMap params: ArrayMap<String, Any>): BeanModule<Any>
 
     /**
      * 多图片上传 方式二（@Multipart：方法注解；@Part：参数注解；参数类型；MultipartBody.Part）
