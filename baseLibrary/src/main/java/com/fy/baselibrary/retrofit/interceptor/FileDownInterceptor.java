@@ -34,12 +34,16 @@ public class FileDownInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
 
         Request request = chain.request();
-        String url = request.url().toString();
-        Response response = chain.proceed(request);
+        if (request.headers().names().contains("IF-RANGE")){ //判断是否是断点续传
+            String url = request.url().toString();
+            Response response = chain.proceed(request);
 
-        assert response.body() != null;
-        return response.newBuilder()
-                .body(new FileResponseBody(response.body(), EncodeUtils.urlDecode(url)))
-                .build();
+            assert response.body() != null;
+            return response.newBuilder()
+                    .body(new FileResponseBody(response.body(), EncodeUtils.urlDecode(url)))
+                    .build();
+        } else {
+            return chain.proceed(request);
+        }
     }
 }

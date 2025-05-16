@@ -61,6 +61,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
     public synchronized <T> MultipartBody filesToMultipartBody(List<T> files, String fileKey, ArrayMap<String, Object> params) {
         boolean isFileKeyAES = (boolean) params.get("isFileKeyAES");
         boolean isTextParamJson = (boolean) params.get("isTextParamJson");
+        String contentType = (String) params.get("contentType");
         //进度发射器
         Channel<Float> channel = (Channel<Float>) params.get("ProgressChannel");
 
@@ -95,7 +96,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
             else break;
 
             sumLeng += file.length();
-            String contentType = URLConnection.guessContentTypeFromName(file.getName());
+//            String contentType = URLConnection.guessContentTypeFromName(file.getName());
             if(TextUtils.isEmpty(contentType)){
                 contentType = "multipart/form-data";
             }

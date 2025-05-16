@@ -15,6 +15,7 @@ import retrofit2.http.HeaderMap
 import retrofit2.http.Headers
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.QueryMap
 import retrofit2.http.Streaming
@@ -70,6 +71,12 @@ interface ApiService {
     @POST
     suspend fun uploadFile(@Url apiUrl: String,
                            @Body formData: ArrayMap<String, Any>): BeanModule<Any>
+
+    @UpLoadFileType
+    @Headers(value = ["CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"])
+    @PUT
+    suspend fun putUploadFile(@Url apiUrl: String,
+                           @Body params: ArrayMap<String, Any>): BeanModule<Any>
 
     /**
      * 多图片上传 方式二（@Multipart：方法注解；@Part：参数注解；参数类型；MultipartBody.Part）
