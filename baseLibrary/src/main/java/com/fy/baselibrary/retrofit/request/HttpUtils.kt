@@ -30,6 +30,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -220,11 +221,12 @@ object HttpUtils {
     }
 
 
-    fun <R> uploadFile(
-        apiUrl: String, files: ArrayList<R>,
+    fun <T> uploadFile(
+        apiUrl: String, files: ArrayList<Any>,
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
+        typeOfT: TypeToken<T>,
         progressCallback: ((Float) -> Unit)? = null
-    ): Flow<Any> {
+    ): Flow<T> {
 
         val channel = Channel<Float>()
         GlobalScope.launch {
@@ -244,24 +246,18 @@ object HttpUtils {
             params["ProgressChannel"] = channel
             params["uploadFile"] = "files"
             params["isFileKeyAES"] = false
-            RequestUtils.create(ApiService::class.java)
+            val data = RequestUtils.create(ApiService::class.java)
                 .uploadFile(apiUrl, params)
 
-            for (proress in channel) {
-                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
-                emit(proress)
-            }
+//            for (proress in channel) {
+//                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
+//                emit(proress)
+//            }
 
-            emit("data")
+            channel?.close()
+            emit(data)
         }
-            .onStart {
-                L.e("request", "请求开始--> ${Thread.currentThread().name}")
-            }
-            .onCompletion { cause ->
-                L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                channel?.close()
-            }
-            .flowOn(Dispatchers.IO)
+            .flowConverter(typeOfT)
     }
 
 

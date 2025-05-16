@@ -293,7 +293,8 @@ public class N {
          *             if (null != bundle)intent.putExtras(bundle); 】
          * flags  PendingIntent.FLAG_UPDATE_CURRENT
          */
-        public NotifyBuild setPendingIntent(Context context, int requestCode, Intent intent, int flags) {
+        public NotifyBuild setPendingIntent(Context context, Intent intent, int flags) {
+            int requestCode = (int) System.currentTimeMillis();
             this.pendingIntent = PendingIntent.getActivity(context, requestCode, intent, flags);
             return this;
         }
@@ -302,7 +303,8 @@ public class N {
          * 设置 通知点击 跳转事件
          * @param intents
          */
-        public NotifyBuild setPendingIntent(Context context, int requestCode,  @NonNull Intent[] intents, int flags) {
+        public NotifyBuild setPendingIntent(Context context,  @NonNull Intent[] intents, int flags) {
+            int requestCode = (int) System.currentTimeMillis();
             this.pendingIntent = PendingIntent.getActivities(context, requestCode, intents, flags);
             return this;
         }
