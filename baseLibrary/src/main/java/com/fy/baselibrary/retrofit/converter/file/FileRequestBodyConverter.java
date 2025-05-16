@@ -61,7 +61,6 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
     public synchronized <T> MultipartBody filesToMultipartBody(List<T> files, String fileKey, ArrayMap<String, Object> params) {
         boolean isFileKeyAES = (boolean) params.get("isFileKeyAES");
         boolean isTextParamJson = (boolean) params.get("isTextParamJson");
-        String contentType = (String) params.get("contentType");
         //进度发射器
 //        Channel<Float> channel = (Channel<Float>) params.get("ProgressChannel");
 
@@ -96,7 +95,7 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
             else break;
 
             sumLeng += file.length();
-//            String contentType = URLConnection.guessContentTypeFromName(file.getName());
+            String contentType = URLConnection.guessContentTypeFromName(file.getName());
             if(TextUtils.isEmpty(contentType)){
                 contentType = "multipart/form-data";
             }
@@ -120,8 +119,8 @@ public class FileRequestBodyConverter implements Converter<ArrayMap<String, Obje
      * @param <T>   泛型
      * @return MultipartBody.Part列表（retrofit 多文件文件上传）
      */
-    public static <T> List<MultipartBody.Part> filesToMultipartBodyPart(List<T> files) {
-        List<MultipartBody.Part> parts = new ArrayList<>();
+    public static <T> ArrayList<MultipartBody.Part> filesToMultipartBodyPart(ArrayList<T> files) {
+        ArrayList<MultipartBody.Part> parts = new ArrayList<>();
 
         File file;
         for (T t : files) {//访问手机端的文件资源，保证手机端sdcdrd中必须有这个文件

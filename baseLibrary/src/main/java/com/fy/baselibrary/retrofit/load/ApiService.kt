@@ -72,12 +72,6 @@ interface ApiService {
     suspend fun uploadFile(@Url apiUrl: String,
                            @Body formData: ArrayMap<String, Any>): BeanModule<Any>
 
-    @UpLoadFileType
-    @Headers(value = ["CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"])
-    @PUT
-    suspend fun putUploadFile(@Url apiUrl: String,
-                           @Body params: ArrayMap<String, Any>): BeanModule<Any>
-
     /**
      * 多图片上传 方式二（@Multipart：方法注解；@Part：参数注解；参数类型；MultipartBody.Part）
      * @param apiUrl
@@ -85,16 +79,17 @@ interface ApiService {
      * @param files  文件
      * @return
      */
-//    @Multipart
-//    @Headers(value = ["CONNECT_TIMEOUT:60000", "READ_TIMEOUT:60000", "WRITE_TIMEOUT:60000"])
-//    @POST
-//    suspend fun uploadFile(@Url apiUrl: String,
-//                           @Part txtParams: ArrayList<MultipartBody.Part>,
-//                           @Part files : MultipartBody.Part): Any
     @Multipart
     @Headers(value = ["CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"])
     @POST
     suspend fun uploadFile(@Url apiUrl: String,
                              @Part txtParams: ArrayList<MultipartBody.Part>?,
-                             @Part files : ArrayList<MultipartBody.Part>): Any
+                             @Part files : ArrayList<MultipartBody.Part>): BeanModule<Any>
+
+    @Multipart
+    @Headers(value = ["CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"])
+    @PUT
+    suspend fun putUploadFile(@Url apiUrl: String,
+                              @Part files : ArrayList<MultipartBody.Part>,
+                              @Part txtParams: ArrayList<MultipartBody.Part>?): BeanModule<Any>
 }

@@ -9,6 +9,7 @@ import android.util.ArrayMap
 import com.fy.baselibrary.application.ioc.ConfigUtils
 import com.fy.baselibrary.retrofit.RequestUtils
 import com.fy.baselibrary.retrofit.ServerException
+import com.fy.baselibrary.retrofit.converter.file.FileRequestBodyConverter
 import com.fy.baselibrary.retrofit.load.ApiService
 import com.fy.baselibrary.retrofit.observer.BaseBean
 import com.fy.baselibrary.retrofit.observer.IProgressDialog
@@ -263,8 +264,9 @@ object HttpUtils {
                 RequestUtils.create(ApiService::class.java)
                     .uploadFile(apiUrl, params)
             } else {
+                val filesPart = FileRequestBodyConverter.filesToMultipartBodyPart(files)
                 RequestUtils.create(ApiService::class.java)
-                    .putUploadFile(apiUrl, params)
+                    .putUploadFile(apiUrl, filesPart, null)
             }
 
 //            for (proress in channel) {
