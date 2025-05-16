@@ -223,9 +223,7 @@ object HttpUtils {
 
     fun <T, F> uploadFile(
         apiUrl: String, files: ArrayList<F>,
-        formData: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         params: ArrayMap<String, Any> = ArrayMap<String, Any>(),
-        headers: ArrayMap<String, Any> = ArrayMap<String, Any>(),
         typeOfT: TypeToken<T>,
         progressCallback: ((Float) -> Unit)? = null
     ): Flow<T> {
@@ -249,7 +247,7 @@ object HttpUtils {
             params["uploadFile"] = "files"
             params["isFileKeyAES"] = false
             val data = RequestUtils.create(ApiService::class.java)
-                .uploadFile(apiUrl, formData)
+                .uploadFile(apiUrl, params)
 
 //            for (proress in channel) {
 //                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
