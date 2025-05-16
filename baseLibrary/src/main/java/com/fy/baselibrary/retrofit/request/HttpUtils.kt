@@ -272,10 +272,13 @@ object HttpUtils {
 //                emit(proress)
 //            }
 
-            channel?.close()
             emit(data)
         }
             .flowConverter(typeOfT)
+            .onCompletion { cause ->
+                channel?.close()
+                cause?.printStackTrace()
+            }
     }
 
 
