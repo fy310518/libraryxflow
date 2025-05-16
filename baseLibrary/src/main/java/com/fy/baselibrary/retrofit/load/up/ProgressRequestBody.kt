@@ -16,7 +16,7 @@ import java.nio.Buffer
 class ProgressRequestBody(
     private val file: File,
     private val contentType: String = "",
-    private val channel: Channel<Float>
+    private val channel: Channel<Float>?
 ): RequestBody() {
 
 
@@ -51,7 +51,7 @@ class ProgressRequestBody(
                     if(lastTotal >= 1024 * 1024 || total >= fileLength){
                         GlobalScope.launch {
     //                        L.e("request", "进度--> ${total} $fileLength ${Thread.currentThread().name}")
-                            channel.send((total * 100 / fileLength).toFloat())
+                            channel?.send((total * 100 / fileLength).toFloat())
                         }
 
                         lastTotal = 0L

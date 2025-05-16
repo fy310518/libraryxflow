@@ -242,13 +242,13 @@ object HttpUtils {
         progressCallback: ((Float) -> Unit)? = null
     ): Flow<T> {
 
-        val channel = Channel<Float>()
-        GlobalScope.launch {
-            for (proress in channel) {
-                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
-                progressCallback?.invoke(proress)
-            }
-        }
+//        val channel = Channel<Float>()
+//        GlobalScope.launch {
+//            for (proress in channel) {
+//                L.e("request", "进度--> ${proress} ${Thread.currentThread().name}")
+//                progressCallback?.invoke(proress)
+//            }
+//        }
         return flow {
             L.e("request", "请求执行--> ${Thread.currentThread().name}")
 
@@ -257,7 +257,7 @@ object HttpUtils {
             else if (item is File) params["files"] = files
             else throw Exception("param exception")
 
-            params["ProgressChannel"] = channel
+//            params["ProgressChannel"] = channel
 
             val data = if(params["contentType"] == null || params["contentType"] == ""){
                 RequestUtils.create(ApiService::class.java)
@@ -275,10 +275,6 @@ object HttpUtils {
             emit(data)
         }
             .flowConverter(typeOfT)
-            .onCompletion { cause ->
-                channel?.close()
-                cause?.printStackTrace()
-            }
     }
 
 
