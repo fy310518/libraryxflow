@@ -87,9 +87,8 @@ interface ApiService {
                              @Part txtParams: ArrayList<MultipartBody.Part>?,
                              @Part files : ArrayList<MultipartBody.Part>): BeanModule<Any>
 
-    @Multipart
     @Headers(value = ["CONNECT_TIMEOUT:120000", "READ_TIMEOUT:120000", "WRITE_TIMEOUT:120000"])
     @PUT
     suspend fun putUploadFile(@Url apiUrl: String,
-                              @Part files : ArrayList<RequestBody>): BeanModule<Any>
+                              @Body files : ArrayList<RequestBody>): BeanModule<Any>
 }
