@@ -76,7 +76,7 @@ public final class RequestModule {
                 .hostnameVerifier((hostname, session) -> {
                     return true;//强行返回true 即验证成功
                 })
-                .proxy(Proxy.NO_PROXY) // 不使用代理，防止抓包
+//                .proxy(Proxy.NO_PROXY) // 不使用代理，防止抓包
                 .protocols(Collections.singletonList(Protocol.HTTP_1_1));
 
         if (ConfigUtils.isEnableCacheInterceptor()) {//是否 添加缓存拦截器
