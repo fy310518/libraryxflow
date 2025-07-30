@@ -8,6 +8,7 @@ task generateSourcesJar(type: Jar){
     classifier 'sources'
 }
 android {
+    namespace = "com.fy.baselibrary"
     compileSdk 34
 
     defaultConfig {
