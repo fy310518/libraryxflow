@@ -37,6 +37,9 @@ class HideKeyboardConstraintLayout: FrameLayout {
         if (me.action == MotionEvent.ACTION_DOWN) {
             val v: View? = hostWindow?.currentFocus //得到当前页面的焦点
             if (isShouldHideKeyboard(v, me)) { //判断用户点击的是否是输入框以外的区域
+                if (v is EditText) {
+                    v.clearFocus() //清除焦点
+                }
                 hideKeyboard(v?.windowToken) //收起键盘
             }
         }
