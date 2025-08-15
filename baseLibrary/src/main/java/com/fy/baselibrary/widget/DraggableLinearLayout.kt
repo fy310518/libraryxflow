@@ -89,7 +89,7 @@ class DraggableLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayo
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        moveDistance = (w * 0.35).toFloat()
+        moveDistance = (w * 0.5).toFloat()
     }
 
 
