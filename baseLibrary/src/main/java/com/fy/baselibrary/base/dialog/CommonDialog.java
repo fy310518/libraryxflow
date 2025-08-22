@@ -56,7 +56,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
 
     protected VDB vdb;
     protected VM vm;
-    protected ViewGroup mRootView;
+    protected View mRootView;
 
     protected PopupDismissListner dialogList;
 
@@ -129,13 +129,9 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     }
 
     private void initRootView(ViewGroup container) {
-        mRootView = new FrameLayout(getContext());
-        mRootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
         vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), layoutId, container, false);
         vdb.setLifecycleOwner(this);
-//        mRootView = vdb.getRoot();
-        mRootView.addView(vdb.getRoot());
+        mRootView = vdb.getRoot();
 
         if(null == vm) {
             vm = AnimUtils.createViewModel(this);
