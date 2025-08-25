@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.AndroidViewModel;
@@ -299,6 +300,10 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     //重写 fragmentDialog show 方法
     @Override
     public void show(FragmentManager manager, String tag) {
+
+        Fragment dialog = manager.findFragmentByTag(tag); //判断当前dialog是否已经 添加到 FragmentManager中
+        if(dialog != null) return;
+
         try {
             Class c=Class.forName("androidx.fragment.app.DialogFragment");
             Constructor con = c.getConstructor();
