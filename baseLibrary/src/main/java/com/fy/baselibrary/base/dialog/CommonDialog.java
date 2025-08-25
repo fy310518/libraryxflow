@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.AndroidViewModel;
 
 import com.fy.baselibrary.R;
+import com.fy.baselibrary.aop.clickfilter.ClickUtils;
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
 import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.base.PopupDismissListner;
@@ -176,7 +177,9 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         setCancelable(isHide);
         if(isHide){
             mRootView.setOnClickListener(v -> {
-                dismiss();
+                if(ClickUtils.isFastClick(v, 2000)){
+                    dismiss();
+                }
             });
             //如果DialogFragment的布局文件只有一个子布局，则设置点击事件
             if(mRootView instanceof ViewGroup){
