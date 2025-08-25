@@ -36,6 +36,8 @@ import java.lang.reflect.Field;
 
 /**
  * 应用 所有dialog 的父类
+ * 注意：在某些 设备上面，dialog 有很大差异所以统一在布局文件 最外层 必须包裹一层 ViewGroup,
+ * 1、内容显示位置 自行通过布局设置；2、显示宽高 自行通过 布局设置
  * Created by fangs on 2017/3/13.
  */
 public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends ViewDataBinding> extends DialogFragment {
@@ -75,9 +77,9 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     protected float dimAmount = 0.5f;
 
     /** 宽度 -1(ViewGroup.LayoutParams.MATCH_PARENT)：撑满；-2(ViewGroup.LayoutParams.WRAP_CONTENT)：自适应； 其他固定数值 */
-    protected int width = -2;
+    protected int width = -1;
     /** 高度 -1：撑满 -2：自适应 其他固定数值 */
-    protected int height = -2;
+    protected int height = -1;
     /** 宽度 百分比（如：屏幕宽度 的 50%）*/
     protected int widthPercent = -1;
 
@@ -176,6 +178,14 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
             mRootView.setOnClickListener(v -> {
                 dismiss();
             });
+            //如果DialogFragment的布局文件只有一个子布局，则设置点击事件
+            if(mRootView instanceof ViewGroup){
+                ViewGroup viewGroup = (ViewGroup) mRootView;
+                if(viewGroup.getChildCount() == 1){
+                    viewGroup.getChildAt(0).setOnClickListener(v -> {
+                    });
+                }
+            }
         }
     }
 
