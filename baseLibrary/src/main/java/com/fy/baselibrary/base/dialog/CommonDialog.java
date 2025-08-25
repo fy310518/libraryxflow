@@ -178,7 +178,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         setCancelable(isHide);
         if(isHide){
             mRootView.setOnClickListener(v -> {
-                if(ClickUtils.isFastClick(v, 2000)){
+                if(!ClickUtils.isFastClick(v, 2000)){
                     dismiss();
                 }
             });
