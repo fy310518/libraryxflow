@@ -105,35 +105,45 @@ public class ShapeBuilder {
         return this;
     }
 
-
-    /**
-     * 设置 渐变角度和颜色 【同下】  注意 最后设置 渐变type，以及其它属性
-     * @param angle
-     * @param startColor
-     * @param endColor
-     * @return
-     */
-    public ShapeBuilder gradient(int angle, @ColorRes int startColor, @ColorRes int endColor) {
-        gradient(angle, startColor, -1, endColor);
-        return this;
-    }
-
     /**
      * 渐变，设置角度(实质调用的Gradient(GradientDrawable.Orientation orientation, int startColor, int
      * centerColor, int endColor)方法)
      *  注意 最后设置 渐变type，以及其它属性
      * @param angle       角度，需要是45的整数倍
      * @param startColor  开始颜色
-     * @param centerColor 中心颜色
+     * @param centerColor 中心颜色   (-1 不设置中心颜色)
      * @param endColor    结束颜色
      */
-    public ShapeBuilder gradient(int angle, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
-        angle = angle % 360;
-        GradientDrawable.Orientation orientation = null;
+    public ShapeBuilder gradientColor(int angle, int startColor, int centerColor, int endColor) {
+        return gradientInit(getOrientation(angle), startColor, centerColor, endColor);
+    }
+    public ShapeBuilder gradientRes(int angle, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
+        if(centerColor > 1){
+            centerColor = ResUtils.getColor(centerColor);
+        }
+
+        return gradientInit(getOrientation(angle), ResUtils.getColor(startColor), centerColor, ResUtils.getColor(endColor));
+    }
+
+    /**
+     * 重新构造 drawable
+     */
+    private ShapeBuilder gradientInit(GradientDrawable.Orientation orientation, int startColor, int centerColor, int endColor) {
+        int[] colors;
+        if (centerColor < 1) {
+            colors = new int[]{startColor, endColor};
+        } else {
+            colors = new int[]{startColor, centerColor, endColor};
+        }
+
+        drawable = new GradientDrawable(orientation, colors);
+
+        return this;
+    }
+
+    private GradientDrawable.Orientation getOrientation(int angle){
+        GradientDrawable.Orientation orientation;
         switch (angle) {
-            case 0:
-                orientation = GradientDrawable.Orientation.LEFT_RIGHT;
-                break;
             case 45:
                 orientation = GradientDrawable.Orientation.BL_TR;
                 break;
@@ -155,23 +165,10 @@ public class ShapeBuilder {
             case 315:
                 orientation = GradientDrawable.Orientation.TL_BR;
                 break;
-        }
-        return gradientInit(orientation, startColor, centerColor, endColor);
-    }
-
-    /**
-     * 重新构造 drawable
-     */
-    private ShapeBuilder gradientInit(GradientDrawable.Orientation orientation, @ColorRes int startColor, int centerColor, @ColorRes int endColor) {
-        int[] colors;
-        if (centerColor < 1) {
-            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(endColor)};
-        } else {
-            colors = new int[]{ResUtils.getColor(startColor), ResUtils.getColor(centerColor), ResUtils.getColor(endColor)};
+            default: orientation = GradientDrawable.Orientation.LEFT_RIGHT;
         }
 
-        drawable = new GradientDrawable(orientation, colors);
-        return this;
+        return orientation;
     }
 
     /**
