@@ -14,6 +14,7 @@ import com.fy.baselibrary.retrofit.load.ApiService
 import com.fy.baselibrary.retrofit.observer.BaseBean
 import com.fy.baselibrary.retrofit.observer.IProgressDialog
 import com.fy.baselibrary.retrofit.observer.TransmissionState
+import com.fy.baselibrary.retrofit.request.HttpUtils.flowConverter
 import com.fy.baselibrary.retrofit.request.HttpUtils.httpGet
 import com.fy.baselibrary.retrofit.request.HttpUtils.postCompose
 import com.fy.baselibrary.retrofit.request.HttpUtils.postForm
@@ -64,26 +65,18 @@ class Builder{
         this.offline = offline
     }
 
-    private fun <T> getNetFlow(typeOfT: TypeToken<T>): Flow<T> {
-        return when (requestMethod) {
-            Method.GET -> {
-                httpGet(apiUrl, params, typeOfT, headers)
-            }
-            Method.POST -> {
-                postForm(apiUrl, params, typeOfT, headers)
-            }
-            else -> {
-                postCompose(apiUrl, params, typeOfT, headers)
-            }
-        }
-    }
-
-    fun <T> getFlow(typeOfT: TypeToken<T>): Flow<T> {
+    /**
+     * 通用请求 不满足 业务需求时，通过 action 回调函数，获取 自定义的 retrofit请求方法，以支持 更多场景
+     * @param action 请求方法
+     *       RequestUtils.create(ApiService::class.java)
+     *                 .getCompose(apiUrl, headers, params)
+     */
+    fun <T> getFlow(typeOfT: TypeToken<T>, action: (suspend () -> BeanModule<Any>)? = null): Flow<T> {
         return if(null == offline){
-            getNetFlow(typeOfT)
+            getNetFlow(typeOfT, action)
         } else {
             if (NetUtils.isConnected()) {
-                getNetFlow(typeOfT)
+                getNetFlow(typeOfT, action)
                     .map { result ->
                         // 请求成功，缓存到数据库
                         offline?.saveDataToDb(result)
@@ -104,6 +97,27 @@ class Builder{
             }
         }
     }
+
+    private fun <T> getNetFlow(typeOfT: TypeToken<T>, action: (suspend () -> BeanModule<Any>)? = null): Flow<T> {
+        return action?.let {
+            flow {
+                val result = action.invoke()
+                emit(result)
+            }.flowConverter(typeOfT)
+        } ?: when (requestMethod) {
+            Method.GET -> {
+                httpGet(apiUrl, params, typeOfT, headers)
+            }
+
+            Method.POST -> {
+                postForm(apiUrl, params, typeOfT, headers)
+            }
+
+            else -> {
+                postCompose(apiUrl, params, typeOfT, headers)
+            }
+        }
+    }
 }
 
 
@@ -111,6 +125,9 @@ object HttpUtils {
 
     val CALL_BACK_LENGTH: Long = (1024 * 1024).toLong()
 
+    fun build(): Builder{
+        return Builder()
+    }
     fun build(apiUrl: String, requestMethod: Method = Method.POSTJSON): Builder{
         return Builder().apply {
             this.apiUrl = apiUrl
