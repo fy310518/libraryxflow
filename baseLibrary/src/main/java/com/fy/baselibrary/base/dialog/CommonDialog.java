@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.FrameLayout;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -24,10 +23,8 @@ import androidx.lifecycle.AndroidViewModel;
 
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.aop.clickfilter.ClickUtils;
-import com.fy.baselibrary.application.mvvm.BaseViewModel;
-import com.fy.baselibrary.application.mvvm.IBaseMVVM;
-import com.fy.baselibrary.base.PopupDismissListner;
-import com.fy.baselibrary.base.ViewHolder;
+import com.fy.baselibrary.base.PopupShowListener;
+import com.fy.baselibrary.base.popupwindow.CommonPopupWindow;
 import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ScreenUtils;
@@ -62,7 +59,8 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     protected VM vm;
     protected View mRootView;
 
-    protected PopupDismissListner dialogList;
+    protected DialogInterface.OnDismissListener dialogList;
+    protected PopupShowListener showListener;
 
     /** dialog显示位置 */
     protected int gravity = Gravity.CENTER;
@@ -142,6 +140,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         }
 
         convertView(this);
+        if(null != showListener) showListener.beforeShow();
     }
 
     @Override
@@ -292,8 +291,13 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
      * 设置 dialog 关闭监听
      * @param dialogList
      */
-    public CommonDialog setDialogList(PopupDismissListner dialogList) {
+    public CommonDialog setDialogList(DialogInterface.OnDismissListener dialogList) {
         this.dialogList = dialogList;
+        return this;
+    }
+
+    public CommonDialog setShowListener(PopupShowListener showListener) {
+        this.showListener = showListener;
         return this;
     }
 
@@ -345,7 +349,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (null != dialogList) dialogList.onDismiss();
+        if (null != dialogList) dialogList.onDismiss(dialog);
     }
 
     protected void setOnKeyListener() {

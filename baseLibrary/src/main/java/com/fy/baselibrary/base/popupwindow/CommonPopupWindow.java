@@ -13,7 +13,7 @@ import android.widget.PopupWindow;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.StyleRes;
 
-import com.fy.baselibrary.base.PopupDismissListner;
+import com.fy.baselibrary.base.PopupShowListener;
 import com.fy.baselibrary.base.ViewHolder;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ScreenUtils;
@@ -39,7 +39,7 @@ public abstract class CommonPopupWindow extends PopupWindow {
     boolean isHide = true;
     float bgAlpha = 0.5f;
 
-    PopupDismissListner dismissListener;
+    PopupShowListener showListener;
 
 
     @Override
@@ -75,6 +75,7 @@ public abstract class CommonPopupWindow extends PopupWindow {
         DensityUtils.measureWidthAndHeight(view);
 
         convertView(ViewHolder.createViewHolder(mContext, view));
+        if(null != showListener) showListener.beforeShow();
 
         bgAlpha(bgAlpha);
         initParams(view);
@@ -123,7 +124,6 @@ public abstract class CommonPopupWindow extends PopupWindow {
     public void dismiss() {
         super.dismiss();
         bgAlpha(1.0f);// popupWindow隐藏时恢复屏幕正常透明度
-        if (null != dismissListener) dismissListener.onDismiss();
     }
 
     @Override
@@ -214,13 +214,21 @@ public abstract class CommonPopupWindow extends PopupWindow {
     }
 
     /**
-     * 设置 窗口 dismiss 监听
-     *
-     * @param dismissListner
+     * 设置 窗口 show 回调
+     * @param showListener
      * @return
      */
-    public CommonPopupWindow setDismissListener(PopupDismissListner dismissListner) {
-        this.dismissListener = dismissListner;
+    public CommonPopupWindow setShowListener(PopupShowListener showListener) {
+        this.showListener = showListener;
+        return this;
+    }
+    /**
+     * 设置 窗口 dismiss 回调
+     * @param dismissListener
+     * @return
+     */
+    public CommonPopupWindow setDismissListener(OnDismissListener dismissListener) {
+        setOnDismissListener(dismissListener);
         return this;
     }
 

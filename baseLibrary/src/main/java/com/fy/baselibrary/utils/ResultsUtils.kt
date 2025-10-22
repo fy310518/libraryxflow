@@ -101,7 +101,7 @@ fun Context.receiverRegister(receiver: BroadcastReceiver, filter: IntentFilter, 
  * @return Unit
  */
 fun <T : View> T.click(intervalMillis: Long = 900L, block: (T) -> Unit) = setOnClickListener { view ->
-    if(ClickUtils.isFastClick(view, intervalMillis)){
+    if(!ClickUtils.isFastClick(view, intervalMillis)){
         block(view as T)
     }
 }
