@@ -63,7 +63,6 @@ class DraggableLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayo
                     return
                 }
 
-                moveLeft = 0
                 restoreToOpen()
             }
         })
@@ -110,6 +109,7 @@ class DraggableLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayo
     fun restoreToOpen(){
         if(moveLeft < moveDistance) return
 
+        moveLeft = 0
         viewDragHelper?.settleCapturedViewAt(0, 0) //参数就是x,y的坐标
         postInvalidate() //注意一定要调用这个方法,否则没效果.
     }
