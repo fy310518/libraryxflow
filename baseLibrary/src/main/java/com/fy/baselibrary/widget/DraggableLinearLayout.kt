@@ -63,6 +63,7 @@ class DraggableLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayo
                     return
                 }
 
+                moveLeft = 0
                 restoreToOpen()
             }
         })
