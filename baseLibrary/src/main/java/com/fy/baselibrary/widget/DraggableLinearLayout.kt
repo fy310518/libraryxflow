@@ -107,6 +107,8 @@ class DraggableLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayo
      * 恢复到打开状态
      */
     fun restoreToOpen(){
+        if(moveLeft < moveDistance) return
+
         viewDragHelper?.settleCapturedViewAt(0, 0) //参数就是x,y的坐标
         postInvalidate() //注意一定要调用这个方法,否则没效果.
     }
