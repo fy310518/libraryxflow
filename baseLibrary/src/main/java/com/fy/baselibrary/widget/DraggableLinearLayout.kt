@@ -63,9 +63,7 @@ class DraggableLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayo
                     return
                 }
 
-                //调用这个方法,就可以设置releasedChild回弹的位置
-                viewDragHelper?.settleCapturedViewAt(0, 0) //参数就是x,y的坐标
-                postInvalidate() //注意一定要调用这个方法,否则没效果.
+                restoreToOpen()
             }
         })
     }
@@ -103,5 +101,13 @@ class DraggableLinearLayout(context: Context, attrs: AttributeSet?) : LinearLayo
             this.isToLeftMove = it
         }
         this.onCloseListener = listener
+    }
+
+    /**
+     * 恢复到打开状态
+     */
+    fun restoreToOpen(){
+        viewDragHelper?.settleCapturedViewAt(0, 0) //参数就是x,y的坐标
+        postInvalidate() //注意一定要调用这个方法,否则没效果.
     }
 }

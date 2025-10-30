@@ -1,10 +1,13 @@
 package com.fy.baselibrary.utils.config
 
+import android.app.Activity
 import android.graphics.Color
+import android.view.View
 import android.view.Window
 import android.widget.EditText
 import androidx.annotation.ColorInt
 import androidx.core.graphics.ColorUtils
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -16,6 +19,24 @@ import androidx.core.view.WindowInsetsControllerCompat
 class StatusBarUtils {
 
     companion object{
+
+        interface KeyboardVisibilityListener {
+            fun onKeyboardVisibilityChanged(isOpen: Boolean)
+        }
+
+        /**
+         * 监听键盘 显示/隐藏
+         */
+        fun attachKeyboardListeners(activity: Activity, listener: KeyboardVisibilityListener) {
+            val rootView = activity.findViewById<View>(android.R.id.content)
+
+            ViewCompat.setOnApplyWindowInsetsListener(rootView) { v: View?, insets: WindowInsetsCompat ->
+                val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                listener.onKeyboardVisibilityChanged(imeHeight > 0)
+                insets
+            }
+        }
+
 
         /**
          * 控制键盘 显示/隐藏
