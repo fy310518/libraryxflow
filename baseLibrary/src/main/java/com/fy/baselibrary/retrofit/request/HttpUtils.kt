@@ -32,6 +32,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -75,26 +76,31 @@ class Builder{
         return if(null == offline){
             getNetFlow(typeOfT, action)
         } else {
-            if (NetUtils.isConnected()) {
-                getNetFlow(typeOfT, action)
-                    .map { result ->
-                        // 请求成功，缓存到数据库
-                        offline?.saveDataToDb(result)
+            flow {
+                val resultData = offline?.queryAllData(typeOfT, params)
 
-                        result
-                    }.flowOn(Dispatchers.IO)
-            } else {
-                flow {
-                    val resultData = offline?.queryAllData(typeOfT, params)
-                        ?: if (GsonUtils.isListType(typeOfT.type)) {
+                if(resultData != null){
+                    emit(resultData)
+                } else {
+                    val result = if (NetUtils.isConnected()) {
+                        getNetFlow(typeOfT, action)
+                            .map { result ->
+                                // 请求成功，缓存到数据库
+                                offline?.saveDataToDb(result)
+
+                                result
+                            }.first()
+                    } else {
+                        if (GsonUtils.isListType(typeOfT.type)) {
                             GsonUtils.fromJson("[]", typeOfT)
                         } else {
                             GsonUtils.fromJson("{}", typeOfT)
                         }
-
-                    emit(resultData)
-                }.flowOn(Dispatchers.IO)
+                    }
+                    emit(result)
+                }
             }
+                .flowOn(Dispatchers.IO)
         }
     }
 
