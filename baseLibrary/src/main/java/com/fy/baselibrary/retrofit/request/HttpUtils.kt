@@ -78,27 +78,25 @@ class Builder{
         } else {
             flow {
                 val resultData = offline?.queryAllData(typeOfT, params)
+                resultData?.apply { emit(resultData) }
 
-                if(resultData != null){
-                    emit(resultData)
+                val result = if (NetUtils.isConnected()) {
+                    getNetFlow(typeOfT, action)
+                        .map { result ->
+                            // 请求成功，缓存到数据库
+                            offline?.saveDataToDb(result)
+
+                            result
+                        }.first()
                 } else {
-                    val result = if (NetUtils.isConnected()) {
-                        getNetFlow(typeOfT, action)
-                            .map { result ->
-                                // 请求成功，缓存到数据库
-                                offline?.saveDataToDb(result)
-
-                                result
-                            }.first()
+                    if (GsonUtils.isListType(typeOfT.type)) {
+                        GsonUtils.fromJson("[]", typeOfT)
                     } else {
-                        if (GsonUtils.isListType(typeOfT.type)) {
-                            GsonUtils.fromJson("[]", typeOfT)
-                        } else {
-                            GsonUtils.fromJson("{}", typeOfT)
-                        }
+                        GsonUtils.fromJson("{}", typeOfT)
                     }
-                    emit(result)
                 }
+
+                emit(result)
             }
                 .flowOn(Dispatchers.IO)
         }
