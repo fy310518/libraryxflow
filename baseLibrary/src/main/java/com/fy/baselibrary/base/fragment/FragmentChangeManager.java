@@ -100,9 +100,8 @@ public class FragmentChangeManager {
         if (null == showFragment) return;
         if (null == fragmentTransaction) fragmentTransaction = mFragmentManager.beginTransaction();
 
-        //判断当前的Fragment是否为空，不为空则隐藏
-        if (null != mCurrentFragment) {
-            if (showFragment == mCurrentFragment) return;
+        if (null != mCurrentFragment && showFragment != mCurrentFragment){
+            //判断当前的Fragment是否为空，不为空则隐藏
             fragmentTransaction.hide(mCurrentFragment);
         }
 
