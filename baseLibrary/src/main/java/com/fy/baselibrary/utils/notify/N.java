@@ -291,10 +291,16 @@ public class N {
          *
          * intent 【intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
          *             if (null != bundle)intent.putExtras(bundle); 】
-         * flags  PendingIntent.FLAG_UPDATE_CURRENT
          */
-        public NotifyBuild setPendingIntent(Context context, Intent intent, int flags) {
+        public NotifyBuild setPendingIntent(Context context, Intent intent) {
+            intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+            intent.setAction("" + System.currentTimeMillis());
             int requestCode = (int) System.currentTimeMillis();
+
+            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                flags = PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT;
+            }
             this.pendingIntent = PendingIntent.getActivity(context, requestCode, intent, flags);
             return this;
         }

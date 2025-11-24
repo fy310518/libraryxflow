@@ -96,7 +96,7 @@ public final class RequestModule {
         }
 
         if (ConfigUtils.isDEBUG()){//是否使用日志拦截器
-            builder.addInterceptor(getResponseIntercept());
+            builder.addNetworkInterceptor(getResponseIntercept());
         }
 
         List<String> cerFileNames = ConfigUtils.getCerFileName();
