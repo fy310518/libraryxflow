@@ -82,12 +82,15 @@ public class FragmentChangeManager {
      * @param position
      */
     public void setFragments(int position) {
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        setFragmentTransition(fragmentTransaction, currentIndex, position);
+        if(!mFragments.isEmpty() && position < mFragments.size()){
 
-        Fragment showFragment = mFragments.get(position);
+            FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+            setFragmentTransition(fragmentTransaction, currentIndex, position);
 
-        setCommitTransaction(fragmentTransaction, showFragment, position);
+            Fragment showFragment = mFragments.get(position);
+
+            setCommitTransaction(fragmentTransaction, showFragment, position);
+        }
     }
 
     /**
