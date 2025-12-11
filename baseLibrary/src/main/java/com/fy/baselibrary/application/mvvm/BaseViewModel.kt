@@ -9,7 +9,7 @@ import com.fy.baselibrary.utils.notify.L
  * description 定义 MVVM ViewModel 基类
  * Created by fangs on 2022/7/4 17:01.
  */
-class BaseViewModel(application: Application) : AndroidViewModel(application) {
+open class BaseViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
