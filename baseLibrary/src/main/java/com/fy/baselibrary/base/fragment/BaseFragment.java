@@ -98,7 +98,7 @@ public abstract class BaseFragment<VM extends AndroidViewModel, VDB extends View
         }
 
         if (null == vm) {
-            vm = AnimUtils.createViewModel(this);
+            vm = AnimUtils.createViewModel(getActivity());
         }
 
         initData(vm, vdb, savedInstanceState);
