@@ -61,15 +61,15 @@ public abstract class CommonPopupWindow extends PopupWindow {
     protected CommonPopupWindow() {}
 
     public CommonPopupWindow(Context context) {
-        mContext = context;
-        onCreateView();
+        onCreateView(context);
     }
 
     /**
      * 绘制 Popup UI
      * 数据构建完成后，必须调用此方法，不然popupWindow 没有内容
      */
-    protected CommonPopupWindow onCreateView() {
+    protected CommonPopupWindow onCreateView(Context context) {
+        mContext = context;
         layoutId = initLayoutId();
 
         view = LayoutInflater.from(mContext).inflate(layoutId, null);
