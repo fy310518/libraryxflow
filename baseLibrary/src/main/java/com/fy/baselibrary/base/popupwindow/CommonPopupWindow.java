@@ -58,10 +58,11 @@ public abstract class CommonPopupWindow extends PopupWindow {
     /** 渲染数据到View中 */
     public abstract void convertView(ViewHolder holder);
 
-    private CommonPopupWindow() {}
+    protected CommonPopupWindow() {}
 
     public CommonPopupWindow(Context context) {
         mContext = context;
+        onCreateView();
     }
 
     /**
@@ -128,21 +129,18 @@ public abstract class CommonPopupWindow extends PopupWindow {
 
     @Override
     public void showAsDropDown(View anchor) {
-        onCreateView();
         popupShowAdapter(anchor);
         super.showAsDropDown(anchor);
     }
 
     @Override
     public void showAsDropDown(View anchor, int xoff, int yoff) {
-        onCreateView();
         popupShowAdapter(anchor);
         super.showAsDropDown(anchor, xoff, yoff);
     }
 
     @Override
     public void showAtLocation(View parent, int gravity, int x, int y) {
-        onCreateView();
         super.showAtLocation(parent, gravity, x, y);
     }
 

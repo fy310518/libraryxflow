@@ -15,9 +15,10 @@ public class NicePopup extends CommonPopupWindow {
     PopupConvertListener convertListener;
 
     public NicePopup(Builder builder) {
-        super(builder.mContext);
+        this.mContext = builder.mContext;
         this.layoutId = builder.layoutId;
         this.convertListener = builder.convertListener;
+        onCreateView();
     }
 
     @Override
