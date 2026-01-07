@@ -66,47 +66,46 @@ class Builder{
         this.offline = offline
     }
 
-    /**
-     * 通用请求 不满足 业务需求时，通过 action 回调函数，获取 自定义的 retrofit请求方法，以支持 更多场景
-     * @param action 请求方法
-     *       RequestUtils.create(ApiService::class.java)
-     *                 .getCompose(apiUrl, headers, params)
-     */
     fun <T> getFlow(typeOfT: TypeToken<T>, action: (suspend () -> BeanModule<Any>)? = null): Flow<T> {
-        return if(null == offline){
-            getNetFlow(typeOfT, action)
-        } else {
+        return offline?.let {
             flow {
-                val resultData = offline?.queryAllData(typeOfT, params)
-                resultData?.apply { emit(resultData) }
-
                 val result = if (NetUtils.isConnected()) {
                     getNetFlow(typeOfT, action)
                         .map { result ->
                             // 请求成功，缓存到数据库
                             offline?.saveDataToDb(result)
 
-                            result
-                        }.first()
+                            offline?.queryAllData(typeOfT, params) ?: result
+                        }
+                        .first()
                 } else {
-                    if (GsonUtils.isListType(typeOfT.type)) {
-                        GsonUtils.fromJson("[]", typeOfT)
-                    } else {
-                        GsonUtils.fromJson("{}", typeOfT)
+                    offline?.queryAllData(typeOfT, params) ?: run {
+                        if (GsonUtils.isListType(typeOfT.type)) {
+                            GsonUtils.fromJson("[]", typeOfT)
+                        } else {
+                            GsonUtils.fromJson("{}", typeOfT)
+                        }
                     }
                 }
 
                 emit(result)
             }
                 .flowOn(Dispatchers.IO)
+        } ?: run {
+            getNetFlow(typeOfT, action)
         }
     }
 
-    private fun <T> getNetFlow(typeOfT: TypeToken<T>, action: (suspend () -> BeanModule<Any>)? = null): Flow<T> {
+    /**
+     * 通用请求 不满足 业务需求时，通过 action 回调函数，获取 自定义的 retrofit请求方法，以支持 更多场景
+     * @param action 请求方法
+     *       RequestUtils.create(ApiService::class.java)
+     *                 .getCompose(apiUrl, headers, params)
+     */
+    fun <T> getNetFlow(typeOfT: TypeToken<T>, action: (suspend () -> BeanModule<Any>)? = null): Flow<T> {
         return action?.let {
             flow {
-                val result = action.invoke()
-                emit(result)
+                emit(action())
             }.flowConverter(typeOfT)
         } ?: when (requestMethod) {
             Method.GET -> {
@@ -129,14 +128,45 @@ object HttpUtils {
 
     val CALL_BACK_LENGTH: Long = (1024 * 1024).toLong()
 
-    fun build(): Builder{
-        return Builder()
+    fun build() = Builder()
+    fun build(apiUrl: String, requestMethod: Method = Method.POSTJSON) = Builder().apply {
+        this.apiUrl = apiUrl
+        this.requestMethod = requestMethod
     }
-    fun build(apiUrl: String, requestMethod: Method = Method.POSTJSON): Builder{
-        return Builder().apply {
-            this.apiUrl = apiUrl
-            this.requestMethod = requestMethod
-        }
+
+    fun <T, I : BaseBean<Any>> Flow<I>.flowConverter(typeOfT: TypeToken<T>): Flow<T> {
+        return map { result ->
+            if (result.isSuccess()) {
+                val data = run {
+                    val jsonData = GsonUtils.toJson(result.getResultData())
+                    GsonUtils.fromJson(jsonData, typeOfT)
+                }
+
+                data
+            } else {
+                throw ServerException(result.getResultMsg(), result.getResultCode())
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    /**
+     * 拓展 Flow 函数，添加异常处理，进度条显示，进度条关闭
+     */
+    fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog? = null, action: ((ex: Throwable) -> Unit)? = null): Flow<T> {
+        return flowOn(Dispatchers.IO)
+            .onStart {
+                L.e("request", "请求开始--> ${Thread.currentThread().name}")
+                progressDialog?.show()
+            }.onCompletion { cause ->
+                cause?.printStackTrace()
+
+                L.e("request", "请求结束--> ${Thread.currentThread().name}")
+                progressDialog?.close()
+            }
+            .catch { ex ->
+                L.e("request", "请求异常--> ${Thread.currentThread().name}")
+                action?.invoke(ex)
+            }
     }
 
     /**
@@ -205,43 +235,6 @@ object HttpUtils {
         }
             .flowConverter(typeOfT)
     }
-
-
-    fun <T, I : BaseBean<Any>> Flow<I>.flowConverter(typeOfT: TypeToken<T>): Flow<T> {
-        return map { result ->
-            if (result.isSuccess()) {
-                val data = run {
-                    val jsonData = GsonUtils.toJson(result.getResultData())
-                    GsonUtils.fromJson(jsonData, typeOfT)
-                }
-
-                data
-            } else {
-                throw ServerException(result.getResultMsg(), result.getResultCode())
-            }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    /**
-     * 拓展 Flow 函数，添加异常处理，进度条显示，进度条关闭
-     */
-    fun <T> Flow<T>.flowNext(progressDialog: IProgressDialog? = null, action: ((ex: Throwable) -> Unit)? = null): Flow<T> {
-        return flowOn(Dispatchers.IO)
-            .onStart {
-                L.e("request", "请求开始--> ${Thread.currentThread().name}")
-                progressDialog?.show()
-            }.onCompletion { cause ->
-                cause?.printStackTrace()
-
-                L.e("request", "请求结束--> ${Thread.currentThread().name}")
-                progressDialog?.close()
-            }
-            .catch { ex ->
-                L.e("request", "请求异常--> ${Thread.currentThread().name}")
-                action?.invoke(ex)
-            }
-    }
-
 
     /**
      * 上传文件
