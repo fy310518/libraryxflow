@@ -60,15 +60,12 @@ public abstract class CommonPopupWindow extends PopupWindow {
 
     protected CommonPopupWindow() {}
 
-    protected CommonPopupWindow(Context context) {
-        mContext = context;
-    }
-
     /**
      * 绘制 Popup UI
      * 数据构建完成后，必须调用此方法，不然popupWindow 没有内容
      */
-    protected CommonPopupWindow onCreateView() {
+    protected CommonPopupWindow onCreateView(Context context) {
+        mContext = context;
         layoutId = initLayoutId();
 
         view = LayoutInflater.from(mContext).inflate(layoutId, null);
@@ -128,22 +125,18 @@ public abstract class CommonPopupWindow extends PopupWindow {
 
     @Override
     public void showAsDropDown(View anchor) {
-        onCreateView();
-
         popupShowAdapter(anchor);
         super.showAsDropDown(anchor);
     }
 
     @Override
     public void showAsDropDown(View anchor, int xoff, int yoff) {
-        onCreateView();
         popupShowAdapter(anchor);
         super.showAsDropDown(anchor, xoff, yoff);
     }
 
     @Override
     public void showAtLocation(View parent, int gravity, int x, int y) {
-        onCreateView();
         super.showAtLocation(parent, gravity, x, y);
     }
 
