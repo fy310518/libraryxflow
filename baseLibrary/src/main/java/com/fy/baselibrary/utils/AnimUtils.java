@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.fy.baselibrary.R;
 import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.application.mvvm.BaseViewModel;
+import com.fy.baselibrary.base.fragment.BaseFragment;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -179,7 +180,7 @@ public class AnimUtils {
         if (obj instanceof FragmentActivity){
             return (BVM) new ViewModelProvider((FragmentActivity) obj).get(modelClass);
         } else if(obj instanceof Fragment){
-            return (BVM) new ViewModelProvider((Fragment)obj).get(modelClass);
+            return (BVM) new ViewModelProvider(((Fragment)obj).getActivity()).get(modelClass);
         } else {
             return null;
         }
