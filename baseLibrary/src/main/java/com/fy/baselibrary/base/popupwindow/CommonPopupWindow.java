@@ -69,13 +69,13 @@ public abstract class CommonPopupWindow extends PopupWindow {
         layoutId = initLayoutId();
 
         view = LayoutInflater.from(mContext).inflate(layoutId, null);
-        DensityUtils.measureWidthAndHeight(view);
 
         convertView(ViewHolder.createViewHolder(mContext, view));
         if(null != showListener) showListener.beforeShow();
 
         bgAlpha(bgAlpha);
         initParams(view);
+        DensityUtils.measureWidthAndHeight(view);
         return this;
     }
 
