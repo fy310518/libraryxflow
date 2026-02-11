@@ -41,6 +41,13 @@ public abstract class BaseFragment<VM extends AndroidViewModel, VDB extends View
     /** 设置懒加载 */
     protected void lazyData() {}
 
+    /**
+     * activity 内的 fragment 是否 可以共享 viewModel
+     */
+    protected boolean isActivityShare() {
+        return false;
+    }
+
     @Override
     public void onClick(View view) {}
 
@@ -98,7 +105,7 @@ public abstract class BaseFragment<VM extends AndroidViewModel, VDB extends View
         }
 
         if (null == vm) {
-            vm = AnimUtils.createViewModel(this);
+            vm = AnimUtils.createViewModel(this, isActivityShare());
         }
 
         initData(vm, vdb, savedInstanceState);

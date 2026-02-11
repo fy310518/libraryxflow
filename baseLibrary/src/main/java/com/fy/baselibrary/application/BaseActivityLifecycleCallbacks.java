@@ -50,7 +50,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
 
             vdb = DataBindingUtil.setContentView(activity, act.executeBefore());
             if (activity instanceof LifecycleOwner) vdb.setLifecycleOwner((LifecycleOwner) activity);
-            bvm = AnimUtils.createViewModel(activity);
+            bvm = AnimUtils.createViewModel(activity, false);
         }
 
 //            注册屏幕旋转监听

@@ -157,9 +157,10 @@ public class AnimUtils {
      * 根据 activity OR fragment 对象，获取对应的 ViewModel
      * @param obj
      * @param <BVM>
+     * @param isActivityShare activity 中 是否共享 ViewModel
      * @return ViewModel
      */
-    public static <BVM extends AndroidViewModel> BVM createViewModel(Object obj) {
+    public static <BVM extends AndroidViewModel> BVM createViewModel(Object obj, boolean isActivityShare) {
         Class modelClass = null;
 
         if (obj instanceof Fragment){
@@ -180,7 +181,11 @@ public class AnimUtils {
         if (obj instanceof FragmentActivity){
             return (BVM) new ViewModelProvider((FragmentActivity) obj).get(modelClass);
         } else if(obj instanceof Fragment){
-            return (BVM) new ViewModelProvider(((Fragment)obj).getActivity()).get(modelClass);
+            if(isActivityShare){
+                return (BVM) new ViewModelProvider(((Fragment)obj).getActivity()).get(modelClass);
+            } else {
+                return (BVM) new ViewModelProvider((Fragment)obj).get(modelClass);
+            }
         } else {
             return null;
         }
