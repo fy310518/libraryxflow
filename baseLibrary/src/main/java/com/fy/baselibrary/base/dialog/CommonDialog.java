@@ -90,6 +90,13 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     /** 渲染数据到View中 */
     public abstract void convertView(CommonDialog dialog);
 
+    /**
+     * activity 内的 fragment 是否 可以共享 viewModel
+     */
+    protected boolean isActivityShare() {
+        return false;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +143,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         mRootView = vdb.getRoot();
 
         if(null == vm) {
-            vm = AnimUtils.createViewModel(this, false);
+            vm = AnimUtils.createViewModel(this, isActivityShare());
         }
 
         convertView(this);
