@@ -66,7 +66,7 @@ class Builder{
         this.offline = offline
     }
 
-    fun <T> getFlow(typeOfT: TypeToken<T>, action: (suspend () -> BeanModule<Any>)? = null): Flow<T> {
+    fun <T> getFlow(typeOfT: TypeToken<T>, action: (suspend () -> BaseBean<Any>)? = null): Flow<T> {
         return offline?.let {
             flow {
                 val result = if (NetUtils.isConnected()) {
@@ -102,7 +102,7 @@ class Builder{
      *       RequestUtils.create(ApiService::class.java)
      *                 .getCompose(apiUrl, headers, params)
      */
-    fun <T> getNetFlow(typeOfT: TypeToken<T>, action: (suspend () -> BeanModule<Any>)? = null): Flow<T> {
+    fun <T> getNetFlow(typeOfT: TypeToken<T>, action: (suspend () -> BaseBean<Any>)? = null): Flow<T> {
         return action?.let {
             flow {
                 emit(action())
