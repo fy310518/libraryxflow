@@ -163,16 +163,17 @@ public class AnimUtils {
     public static <BVM extends AndroidViewModel> BVM createViewModel(Object obj, boolean isActivityShare) {
         Class modelClass = null;
 
-        if (obj instanceof Fragment){
-            Type type = obj.getClass().getGenericSuperclass();
-            if (type instanceof ParameterizedType) {
+        Type type = obj.getClass().getGenericSuperclass();
+        if (type instanceof ParameterizedType) {
+            try {
                 modelClass = (Class) ((ParameterizedType) type).getActualTypeArguments()[0];
+            } catch (java.lang.Exception e) {
             }
-        } else {
-            Type[] types = obj.getClass().getGenericInterfaces();
-            if (types.length > 0 && types[0] instanceof ParameterizedType){
-                modelClass = (Class) ((ParameterizedType) types[0]).getActualTypeArguments()[0];
-            }
+        }
+
+        Type[] types = obj.getClass().getGenericInterfaces();
+        if (types.length > 0 && types[0] instanceof ParameterizedType){
+            modelClass = (Class) ((ParameterizedType) types[0]).getActualTypeArguments()[0];
         }
 
         //如果没有指定泛型参数，则默认使用BaseViewModel
