@@ -184,9 +184,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         setCancelable(isHide);
         if(isHide){
             mRootView.setOnClickListener(v -> {
-                if(!ClickUtils.isFastClick(v, 2000)){
-                    dismiss();
-                }
+                dismiss();
             });
             //如果DialogFragment的布局文件只有一个子布局，则设置点击事件
             if(mRootView instanceof ViewGroup){
