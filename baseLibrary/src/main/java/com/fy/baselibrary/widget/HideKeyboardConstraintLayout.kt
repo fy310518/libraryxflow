@@ -41,6 +41,8 @@ class HideKeyboardConstraintLayout: FrameLayout {
                     v.clearFocus() //清除焦点
                 }
                 hideKeyboard(v?.windowToken) //收起键盘
+
+                return true //返回true，表示我处理了该事件，直接返回，不需要继续传递给子控件了
             }
         }
         return super.dispatchTouchEvent(me)
