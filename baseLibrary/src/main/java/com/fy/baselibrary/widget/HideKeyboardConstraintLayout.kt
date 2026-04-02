@@ -1,10 +1,12 @@
 package com.fy.baselibrary.widget
 
 import android.content.Context
+import android.graphics.Rect
 import android.os.IBinder
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.Window
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -42,7 +44,10 @@ class HideKeyboardConstraintLayout: FrameLayout {
                 }
                 hideKeyboard(v?.windowToken) //收起键盘
 
-                return true //返回true，表示我处理了该事件，直接返回，不需要继续传递给子控件了
+                val touchView = findTouchView(this, me.rawX, me.rawY)
+                if(null == touchView || touchView == this){
+                    return true //返回true，表示我处理了该事件，直接返回，不需要继续传递给子控件了
+                }
             }
         }
         return super.dispatchTouchEvent(me)
@@ -78,5 +83,36 @@ class HideKeyboardConstraintLayout: FrameLayout {
             im.hideSoftInputFromWindow(token, InputMethodManager.HIDE_NOT_ALWAYS)
         }
     }
+
+    /**
+     * 找到点击坐标对应的 View
+     * @param rootView 根布局
+     * @param x 点击坐标 X (rawX)
+     * @param y 点击坐标 Y (rawY)
+     */
+    fun findTouchView(rootView: View, x: Float, y: Float): View? {
+        val outRect = Rect()
+        rootView.getGlobalVisibleRect(outRect)
+
+        // 不在当前 View 范围内，直接返回 null
+        if (!outRect.contains(x.toInt(), y.toInt())) {
+            return null
+        }
+
+        // 如果是 ViewGroup，倒序遍历子 View（最上层的优先）
+        if (rootView is ViewGroup) {
+            for (i in rootView.childCount - 1 downTo 0) {
+                val child = rootView.getChildAt(i)
+                val touchView = findTouchView(child, x, y)
+                if (touchView != null) {
+                    return touchView
+                }
+            }
+        }
+
+        // 自己就是目标 View
+        return rootView
+    }
+
 
 }
