@@ -45,10 +45,12 @@ class HideKeyboardConstraintLayout: FrameLayout {
                 hideKeyboard(v?.windowToken) //收起键盘
 
                 // 找到点击的坐标对应的 View
-                val touchView = findTouchView(this, me.rawX, me.rawY)
-                if(null == touchView || touchView == this){
-                    return true //返回true，表示我处理了该事件，直接返回，不需要继续传递给子控件了
-                }
+//                val touchView = findTouchView(this, me.rawX, me.rawY)
+//                if(null == touchView || touchView == this){
+//                    return true //返回true，表示我处理了该事件，直接返回，不需要继续传递给子控件了
+//                }
+
+                return true //返回true，表示我处理了该事件，直接返回，不需要继续传递给子控件了
             }
         }
         return super.dispatchTouchEvent(me)
