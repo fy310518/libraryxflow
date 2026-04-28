@@ -39,7 +39,7 @@ public final class RequestModule {
     protected static Retrofit getService(OkHttpClient.Builder okBuilder) {
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .addConverterFactory(FileConverterFactory.create())
-                .addConverterFactory(getGsonConvertFactory())
+//                .addConverterFactory(getGsonConvertFactory())
                 .baseUrl(ConfigUtils.getBaseUrl())
                 .client(okBuilder.build());
 
