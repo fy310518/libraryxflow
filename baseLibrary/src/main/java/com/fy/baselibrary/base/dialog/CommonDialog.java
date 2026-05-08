@@ -66,8 +66,6 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     protected int gravity = Gravity.CENTER;
     /** dialog进出动画 资源ID */
     protected int anim = android.R.style.Animation_Translucent;
-    @LayoutRes
-    protected int layoutId;
 
     /** 是否 拦截物理返回键  [true 拦截，点击返回键 无效]*/
     protected boolean isKeyBack = false;
@@ -102,7 +100,6 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         super.onCreate(savedInstanceState);
 
         setStyle(DialogFragment.STYLE_NO_TITLE, R.style.commonDialog);
-        layoutId = initLayoutId();
 
         //恢复保存的数据
         if (null != savedInstanceState) {
@@ -114,7 +111,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
             isHide = savedInstanceState.getBoolean(CANCEL);
             isKeyBack = savedInstanceState.getBoolean(IS_KEY_BACK);
             anim = savedInstanceState.getInt(ANIM);
-            layoutId = savedInstanceState.getInt(LAYOUT);
+//            layoutId = savedInstanceState.getInt(LAYOUT);
         }
     }
 
@@ -138,7 +135,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     }
 
     private void initRootView(ViewGroup container) {
-        vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), layoutId, container, false);
+        vdb = DataBindingUtil.inflate(LayoutInflater.from(getContext()), initLayoutId(), container, false);
         vdb.setLifecycleOwner(this);
         mRootView = vdb.getRoot();
 
@@ -213,7 +210,7 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
         outState.putBoolean(CANCEL, isHide);
         outState.putBoolean(IS_KEY_BACK, isKeyBack);
         outState.putInt(ANIM, anim);
-        outState.putInt(LAYOUT, layoutId);
+//        outState.putInt(LAYOUT, layoutId);
     }
 
 
