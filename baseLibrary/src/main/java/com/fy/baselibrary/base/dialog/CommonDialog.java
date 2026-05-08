@@ -66,6 +66,8 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     protected int gravity = Gravity.CENTER;
     /** dialog进出动画 资源ID */
     protected int anim = android.R.style.Animation_Translucent;
+    @LayoutRes
+    protected int layoutId;
 
     /** 是否 拦截物理返回键  [true 拦截，点击返回键 无效]*/
     protected boolean isKeyBack = false;
