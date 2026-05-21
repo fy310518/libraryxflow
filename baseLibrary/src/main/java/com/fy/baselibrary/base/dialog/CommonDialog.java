@@ -309,30 +309,30 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     @Override
     public void show(FragmentManager manager, String tag) {
 
-        Fragment dialog = manager.findFragmentByTag(tag); //判断当前dialog是否已经 添加到 FragmentManager中
-        if(dialog != null) return;
+        if (tag == null) return;
+
+        Fragment existingFragment = manager.findFragmentByTag(tag);
+        if (existingFragment != null && (existingFragment.isAdded() || existingFragment.isVisible() || !existingFragment.isDetached())) {
+            return;
+        }
+
+        // 检查是否已经有 Dialog 在显示
+        if (this.getDialog() != null && this.getDialog().isShowing()) {
+            return;
+        }
+
+        if (isAdded() || isVisible()) {
+            return;
+        }
 
         try {
-            Class c=Class.forName("androidx.fragment.app.DialogFragment");
-            Constructor con = c.getConstructor();
-            Object obj = con.newInstance();
-            Field dismissed = c.getDeclaredField("mDismissed");
-            dismissed.setAccessible(true);
-            dismissed.set(obj,false);
-            Field shownByMe = c.getDeclaredField("mShownByMe");
-            shownByMe.setAccessible(true);
-            shownByMe.set(obj,false);
+            manager.beginTransaction()
+                    .add(this, tag)
+                    .commitAllowingStateLoss();
+            manager.executePendingTransactions();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        FragmentTransaction ft = manager.beginTransaction();
-        if (this.isAdded()) {
-            ft.remove(this).commitAllowingStateLoss();
-        }
-
-        ft.add(this, tag);
-        ft.commitAllowingStateLoss();
     }
 
     /**
