@@ -22,6 +22,7 @@ import com.fy.baselibrary.application.ioc.ConfigUtils;
 import com.fy.baselibrary.application.mvvm.IBaseMVVM;
 import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.ResUtils;
+import com.fy.baselibrary.utils.SpanUtils;
 import com.fy.baselibrary.utils.notify.L;
 
 
@@ -98,6 +99,7 @@ public class BaseActivityLifecycleCallbacks extends BaseLifecycleCallback {
     @Override
     public void onActivityDestroyed(Activity activity) {
         L.e(TAG + activity.getClass().getSimpleName(), "--Destroy()");
+        SpanUtils.releaseAll();
 
         //销毁 屏幕旋转监听
         BaseOrientationListener orientationListener = orientationListenerMap.get(activity.getClass().getSimpleName() + "-" + activity.getTaskId());

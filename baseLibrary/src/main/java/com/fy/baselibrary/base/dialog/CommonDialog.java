@@ -28,6 +28,7 @@ import com.fy.baselibrary.base.popupwindow.CommonPopupWindow;
 import com.fy.baselibrary.utils.AnimUtils;
 import com.fy.baselibrary.utils.DensityUtils;
 import com.fy.baselibrary.utils.ScreenUtils;
+import com.fy.baselibrary.utils.SpanUtils;
 import com.fy.baselibrary.utils.notify.L;
 
 import java.lang.reflect.Constructor;
@@ -303,6 +304,12 @@ public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends View
     public CommonDialog setShowListener(PopupShowListener showListener) {
         this.showListener = showListener;
         return this;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        SpanUtils.releaseAll();
     }
 
     //重写 fragmentDialog show 方法

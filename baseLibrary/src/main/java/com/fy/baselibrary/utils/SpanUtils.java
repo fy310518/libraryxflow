@@ -5,8 +5,11 @@ import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.collection.LruCache;
+import androidx.core.graphics.TypefaceCompat;
 
 import android.graphics.Typeface;
+import android.os.Build;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -16,6 +19,9 @@ import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
+import android.text.style.TypefaceSpan;
+
+import com.fy.baselibrary.application.ioc.ConfigUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,10 +32,44 @@ import java.util.regex.Pattern;
  */
 public class SpanUtils {
 
+    private static LruCache<String, Typeface> cache = new LruCache<String, Typeface>(5){
+        // 单个体积粗略估算，Typeface无直接字节API，一般固定返回1按个数限制
+        @Override
+        protected int sizeOf(String key, Typeface value) {
+            return 1;
+        }
+    };
+
+
     private SpanUtils () {
         /* cannot be instantiated */
         throw new UnsupportedOperationException("cannot be instantiated");
     }
+
+    /**
+     * 获取复用Typeface，统一使用Application上下文
+     */
+    public static Typeface getTypeface(int weight, boolean italic) {
+        String key = "Typeface.SANS_SERIF_" + weight + "_" + italic;
+
+        // 命中缓存直接返回
+        Typeface typeface = cache.get(key);
+        if(typeface == null){
+            // 强制使用Application上下文，杜绝页面泄漏
+            typeface = TypefaceCompat.create(ConfigUtils.getAppCtx(), Typeface.SANS_SERIF, weight, italic);
+            cache.put(key, typeface);
+
+            return typeface;
+        } else {
+            return typeface;
+        }
+    }
+
+    // 低内存时清空缓存释放Native资源
+    public static void releaseAll() {
+        cache.evictAll();
+    }
+
 
     /**
      * 获取建造者
@@ -63,6 +103,10 @@ public class SpanUtils {
          */
         @DimenRes
         private int textDpSize;
+        /**
+         * 字重
+         */
+        private int textFontWeight = 0;
         /** 字体样式 */
         private int textStyle = Typeface.NORMAL;
         /** 是否添加删除线 */
@@ -93,6 +137,11 @@ public class SpanUtils {
 
         public Builder setTextDpSize(int textDpSize) {
             this.textDpSize = textDpSize;
+            return this;
+        }
+
+        public Builder setTextFontWeight(int textFontWeight) {
+            this.textFontWeight = textFontWeight;
             return this;
         }
 
@@ -190,6 +239,15 @@ public class SpanUtils {
                 int size = (int) ResUtils.getDimen(textDpSize);
                 //设置字体大小（绝对值,单位：像素）,第二个参数boolean dip，如果为true，表示前面的字体大小单位为dip，否则为像素
                 spanBuilder.setSpan(new AbsoluteSizeSpan(size, false), start, end, flag);
+            }
+
+            if (textFontWeight > 0) {
+                Typeface tf = getTypeface(textFontWeight, false);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    spanBuilder.setSpan(new TypefaceSpan(tf), start, end, flag);
+                } else {
+                    spanBuilder.setSpan(new StyleSpan(Typeface.NORMAL), start, end, flag);
+                }
             }
 
             if (textStyle > Typeface.NORMAL){
