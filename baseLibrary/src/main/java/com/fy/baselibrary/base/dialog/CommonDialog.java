@@ -36,8 +36,6 @@ import java.lang.reflect.Field;
 
 /**
  * 应用 所有dialog 的父类
- * 注意：在某些 设备上面，dialog 有很大差异所以统一在布局文件 最外层 必须包裹一层 ViewGroup,
- * 1、内容显示位置 自行通过布局设置；2、显示宽高 自行通过 布局设置
  * Created by fangs on 2017/3/13.
  */
 public abstract class CommonDialog<VM extends AndroidViewModel, VDB extends ViewDataBinding> extends DialogFragment {

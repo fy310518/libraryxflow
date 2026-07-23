@@ -98,20 +98,28 @@ public class TimeUtils {
 
     /**
      * 根据 calendar 获取本周的开始日期和结束日期 的时间戳
-     * @param isMoudel 周起始模式（Calendar.SUNDAY 以周日为首日; Calendar.MONDAY 以周一为首日）
+     * @param model 周起始模式（Calendar.SUNDAY 以周日为首日; Calendar.MONDAY 以周一为首日）
      */
-    public static long[] getWeekTimeMillis(Calendar calendar, int isMoudel) {
+    public static long[] getWeekTimeMillis(Calendar calendar, int model) {
         Calendar calendarWeek = Calendar.getInstance();
         calendarWeek.setTimeInMillis(calendar.getTimeInMillis());
+        calendarWeek.setFirstDayOfWeek(model); // 设置 周起始模式
 
-        calendarWeek.add(Calendar.DATE, 0 * 7);   // 0 表示当前周，-1 表示上周，1 表示下周，以此类推
-        calendarWeek.setFirstDayOfWeek(Calendar.SUNDAY); // 以周日为首日
         // 获取本周的开始日期
-        calendarWeek.set(Calendar.DAY_OF_WEEK, isMoudel);
+        calendarWeek.set(Calendar.DAY_OF_WEEK, model);
+        calendarWeek.set(Calendar.HOUR_OF_DAY, 0);
+        calendarWeek.set(Calendar.MINUTE, 0);
+        calendarWeek.set(Calendar.SECOND, 0);
+        calendarWeek.set(Calendar.MILLISECOND, 0);
         long startOfWeek = calendarWeek.getTimeInMillis();
 
         // 获取本周的结束日期
-        calendarWeek.set(Calendar.DAY_OF_WEEK, isMoudel == Calendar.SUNDAY ? Calendar.SATURDAY : Calendar.SUNDAY);
+        int endDay = model == Calendar.SUNDAY ? Calendar.SATURDAY : Calendar.SUNDAY;
+        calendarWeek.set(Calendar.DAY_OF_WEEK, endDay);
+        calendarWeek.set(Calendar.HOUR_OF_DAY, 23);
+        calendarWeek.set(Calendar.MINUTE, 59);
+        calendarWeek.set(Calendar.SECOND, 59);
+        calendarWeek.set(Calendar.MILLISECOND, 999);
         long endOfWeek = calendarWeek.getTimeInMillis();
 
         return new long[]{startOfWeek, endOfWeek};
@@ -119,9 +127,15 @@ public class TimeUtils {
 
     /**
      * 判断选择的日期是否是本周
+     * 周起始模式（Calendar.SUNDAY 以周日为首日; Calendar.MONDAY 以周一为首日）
      */
     public static boolean isThisWeek(Calendar date) {
+        return isThisWeek(date, Calendar.SUNDAY);
+    }
+    public static boolean isThisWeek(Calendar date, int model) {
         Calendar calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(model);
+
         int currentWeek = calendar.get(Calendar.WEEK_OF_YEAR);
 
         calendar.setTimeInMillis(date.getTimeInMillis());
